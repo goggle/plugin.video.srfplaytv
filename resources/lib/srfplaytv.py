@@ -197,7 +197,6 @@ class SRFPlayTV:
         self.cache = SimpleCache()
 
     def build_url(self, mode=None, name=None, url=None, hash=None, page=None):
-        # url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
         if mode:
             mode = str(mode)
         if page:
@@ -206,23 +205,12 @@ class SRFPlayTV:
         qs = (url, mode, name, hash, page)
         qn = ('url', 'mode', 'name', 'hash', 'page')
         purl = sys.argv[0]
-        # if url:
-        #     add = '?' if not added else '&'
-        #     purl += '%surl=%s' % (add, urllib.quote_plus(url))
-        #     added = True
-        # if mode:
-        #     add = '?' if not added else '&'
-        #     purl += '%surl=%s' % (add, urllib.quote_plus(mode))
-        #     added = True
-        # if 
         for q, n in zip(qs, qn):
             if q:
                 add = '?' if not added else '&'
                 purl += '%s%s=%s' % (add, n, urllib.quote_plus(q))
-                added = True
-        
+                added = True        
         return purl
-
     
     def open_url(self, url, use_cache=True):
         # TODO: Outsource this
@@ -250,7 +238,6 @@ class SRFPlayTV:
         with open(file_path, 'r') as f:
             json_file = json.load(f)
             try:
-                # return [entry['id'] for entry in json_file['Show']]
                 return [entry['id'] for entry in json_file]
             except KeyError:
                 log('Unexpected file structure for %s.' % FAVOURITE_SHOWS_FILENAME)
@@ -279,54 +266,21 @@ class SRFPlayTV:
         self.write_favourite_show_ids(show_ids)
     
     def build_main_menu(self):
-        name = 'All shows'
-        list_item = xbmcgui.ListItem(name)
-        list_item.setProperty('IsPlayable', 'false')
-        u = self.build_url(mode=10, name=name)
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True) 
-
-        name = 'Favourite shows'
-        list_item = xbmcgui.ListItem(name)
-        list_item.setProperty('IsPlayable', 'false')
-        u = self.build_url(mode=11, name=name)
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
-
-        name = 'Newest favourite shows'
-        list_item = xbmcgui.ListItem(name)
-        list_item.setProperty('IsPlayable', 'false')
-        u = self.build_url(mode=12, name=name)
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
-
-        name = 'Trending'
-        list_item = xbmcgui.ListItem(name)
-        list_item.setProperty('IsPlayable', 'false')
-        u = self.build_url(mode=16, name=name)
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
-
-        name = 'Newest shows (by topic)'
-        list_item = xbmcgui.ListItem(name)
-        list_item.setProperty('IsPlayable', 'false')
-        u = self.build_url(mode=13, name=name)
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
-
-        name = 'Most clicked shows (by topic)'
-        list_item = xbmcgui.ListItem(name)
-        list_item.setProperty('IsPlayable', 'false')
-        u = self.build_url(mode=14, name=name)
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
-
-        name = 'Soon offline'
-        list_item = xbmcgui.ListItem(name)
-        list_item.setProperty('IsPlayable', 'false')
-        u = self.build_url(mode=15, name=name)
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
-
-        name = 'Shows by date'
-        list_item = xbmcgui.ListItem(name)
-        list_item.setProperty('IsPlayable', 'false')
-        u = self.build_url(mode=17, name=name)
-        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
-    
+        main_menu_list = [
+            {'name': 'All shows', 'mode': 10},
+            {'name': 'Favourite shows', 'mode': 11},
+            {'name': 'Newest favourite shows', 'mode': 12},
+            {'name': 'Recommodations', 'mode': 16},
+            {'name': 'Newest shows (by topic)', 'mode': 13},
+            {'name': 'Most clicked shows (by topic)', 'mode': 14},
+            {'name': 'Soon offline', 'mode': 15},
+            {'name': 'Shows by date', 'mode': 17},
+        ]
+        for mme in main_menu_list:
+            list_item = xbmcgui.ListItem(mme['name'])
+            list_item.setProperty('IsPlayable', 'false')
+            u = self.build_url(mode=mme['mode'], name=mme['name'])
+            xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
     def build_dates_overview_menu(self):
         log('build_dates_overview_menu')
