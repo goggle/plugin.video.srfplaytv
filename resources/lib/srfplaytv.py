@@ -195,6 +195,34 @@ class SRFPlayTV:
     def __init__(self):
         log('__init__')
         self.cache = SimpleCache()
+
+    def build_url(self, mode=None, name=None, url=None, hash=None, page=None):
+        # url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+        if mode:
+            mode = str(mode)
+        if page:
+            page = str(page)
+        added = False
+        qs = (url, mode, name, hash, page)
+        qn = ('url', 'mode', 'name', 'hash', 'page')
+        purl = sys.argv[0]
+        # if url:
+        #     add = '?' if not added else '&'
+        #     purl += '%surl=%s' % (add, urllib.quote_plus(url))
+        #     added = True
+        # if mode:
+        #     add = '?' if not added else '&'
+        #     purl += '%surl=%s' % (add, urllib.quote_plus(mode))
+        #     added = True
+        # if 
+        for q, n in zip(qs, qn):
+            if q:
+                add = '?' if not added else '&'
+                purl += '%s%s=%s' % (add, n, urllib.quote_plus(q))
+                added = True
+        
+        return purl
+
     
     def open_url(self, url, use_cache=True):
         # TODO: Outsource this
@@ -254,66 +282,54 @@ class SRFPlayTV:
         name = 'All shows'
         list_item = xbmcgui.ListItem(name)
         list_item.setProperty('IsPlayable', 'false')
-        mode = 10
-        u = ''
-        u=sys.argv[0]+"?url="+urllib.quote_plus(u)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
+        u = self.build_url(mode=10, name=name)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True) 
 
         name = 'Favourite shows'
         list_item = xbmcgui.ListItem(name)
         list_item.setProperty('IsPlayable', 'false')
-        mode = 11
-        u = ''
-        u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+        u = self.build_url(mode=11, name=name)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
         name = 'Newest favourite shows'
         list_item = xbmcgui.ListItem(name)
         list_item.setProperty('IsPlayable', 'false')
-        mode = 12
-        u = ''
-        u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+        u = self.build_url(mode=12, name=name)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
         name = 'Trending'
         list_item = xbmcgui.ListItem(name)
         list_item.setProperty('IsPlayable', 'false')
-        mode = 16
-        u = ''
-        u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+        u = self.build_url(mode=16, name=name)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
         name = 'Newest shows (by topic)'
         list_item = xbmcgui.ListItem(name)
         list_item.setProperty('IsPlayable', 'false')
-        mode = 13
-        u = ''
-        u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+        u = self.build_url(mode=13, name=name)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
         name = 'Most clicked shows (by topic)'
         list_item = xbmcgui.ListItem(name)
         list_item.setProperty('IsPlayable', 'false')
-        mode = 14
-        u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+        u = self.build_url(mode=14, name=name)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
         name = 'Soon offline'
         list_item = xbmcgui.ListItem(name)
         list_item.setProperty('IsPlayable', 'false')
-        mode = 15
-        u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+        u = self.build_url(mode=15, name=name)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
         name = 'Shows by date'
         list_item = xbmcgui.ListItem(name)
         list_item.setProperty('IsPlayable', 'false')
-        mode = 17
-        u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+        u = self.build_url(mode=17, name=name)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
     
 
     def build_dates_overview_menu(self):
+        log('build_dates_overview_menu')
         def folder_name(d):
             today = datetime.date.today()
             if d == today:
@@ -332,11 +348,9 @@ class SRFPlayTV:
             d = current_date + datetime.timedelta(-i)
             list_item = xbmcgui.ListItem(label=folder_name(d))
             u = ''
-            mode = 24
             name = d.strftime('%d-%m-%Y')
-            u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+            u = self.build_url(mode=24, name=name)
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
-
 
 
     def build_date_menu(self, date_string):
@@ -376,11 +390,10 @@ class SRFPlayTV:
         for elem in topics_json:
             list_item = xbmcgui.ListItem(label=elem.get('title'))
             list_item.setProperty('IsPlayable', 'false')
-            u = ''
-            # mode = 22
             name = elem.get('id')
-            u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
-            xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
+            if name:
+                u = self.build_url(mode=mode, name=name)
+                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
     
     def build_topics_menu(self, name, topic_id=None, page=1):
         log('build_topics_menu')
@@ -427,11 +440,9 @@ class SRFPlayTV:
             vid = id_list[page*NUMBER_OF_EPISODES]
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
-            u = ''
             # mode = 22 if newest_or_most_clicked=='Newest' else 23
             name = topic_id if topic_id else ''
-            page = page + 1
-            u = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name) + '&page=' + str(page)
+            u = self.build_url(mode=mode, name=name, page=page+1)
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=next_item, isFolder=True)
         except IndexError:
             return
@@ -513,16 +524,10 @@ class SRFPlayTV:
 
             # Add context menu to add / remove this show from the favourites:
             if show_id in favourite_show_ids:
-                u = ''
-                mode = 101 # remove
-                name = show_id
-                plugin_url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+                plugin_url = self.build_url(mode=101, name=show_id)
                 list_item.addContextMenuItems([('Remove from favourite shows', 'XBMC.RunPlugin(%s)' % plugin_url,),])
             else:
-                u = ''
-                mode = 100 # add
-                name = show_id
-                plugin_url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)                
+                plugin_url = self.build_url(mode=100, name=show_id)
                 list_item.addContextMenuItems([('Add to favourite shows', 'XBMC.RunPlugin(%s)' % plugin_url,),])
 
             try:
@@ -536,10 +541,7 @@ class SRFPlayTV:
                 'thumb': thumbnail,
                 'poster': image_url,
             })
-            u = ''
-            name = show_id
-            mode = 20
-            url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
+            url = self.build_url(mode=20, name=show_id)
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=True)        
     
     def build_show_menu(self, show_id, page_hash=None):
@@ -612,11 +614,8 @@ class SRFPlayTV:
             is_folder = True if has_segments and SEGMENTS else False
             # is_folder = True
             
-            u = ''
-            name = episode_id
             mode = 21 if is_folder else 50
-            url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
-
+            url = self.build_url(mode=mode, name=episode_id)
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=is_folder)
 
 
@@ -625,10 +624,7 @@ class SRFPlayTV:
             log('next_hash: %s' % next_page_hash)
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
-            u = ''
-            name = show_id
-            mode = 20
-            url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name) + '&hash=' + urllib.quote_plus(next_page_hash)
+            url = self.build_url(mode=20, name=show_id)
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, next_item, isFolder=True)
     
 
@@ -724,110 +720,9 @@ class SRFPlayTV:
             'banner': banner,
         })
 
-        if is_folder:
-            u = ''
-            mode = 21
-            name = vid
-            url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name) 
-            # xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=True)
-        else:
-            u = ''
-            mode = 50
-            name = vid
-            url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name) 
-            # xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=False)
+        url = self.build_url(mode=21, name=vid) if is_folder else self.build_url(mode=50, name=vid)
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=is_folder)
 
-
-    def build_episode_menu2(self, episode_id, allow_segments=True):
-        log('build_episode_menu, episode_id = %s' % episode_id)
-        json_url = 'https://il.srgssr.ch/integrationlayer/2.0/%s/mediaComposition/video/%s.json' % (BU, episode_id)
-        json_response = json.loads(self.open_url(json_url))
-
-        try:
-            # title = str_or_none(json_response['episode']['title'])
-            # description = str_or_none(json_response['episode']['title'])
-            banner = str_or_none(json_response['show']['bannerImageUrl'])
-        except KeyError:
-            # title = description = banner = None
-            banner = None
-        
-        json_chapter_list = json_response.get('chapterList')
-        if type(json_chapter_list) != list or len(json_chapter_list) == 0:
-            log('No chapters for episode %s found.' % episode_id)
-            return
-        
-        json_first_chapter = json_chapter_list[0] # FIXME: Is there multi-chapter media?
-        title = json_first_chapter.get('title')
-        chapter_id = json_first_chapter.get('id')
-        description = json_first_chapter.get('description')
-        image = json_first_chapter.get('imageUrl')
-        duration = int_or_none(json_first_chapter.get('duration'), scale=1000)
-        date = None # TODO
-
-        list_item = xbmcgui.ListItem(label=title)
-        list_item.setProperty('IsPlayable', 'true')
-        list_item.setInfo(
-            'video',
-            {
-                'title': title,
-                'plot': description,
-                'duration': duration,
-                'aired': date,
-            }
-        )
-        list_item.setArt({
-            'thumb': image, # TODO
-            'poster': image,
-            'banner': banner,
-        })
-
-        u = ''
-        mode = 50
-        name = chapter_id
-        url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name) 
-
-        xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=False)
-
-        if not allow_segments:
-            return
-
-        json_segment_list = json_first_chapter.get('segmentList')
-        if type(json_segment_list) != list or len(json_segment_list) == 0:
-            log('No segments for episode %s found.' % episode_id)
-            return
-        
-        for segment in json_segment_list:
-            title = str_or_none(segment.get('title'))
-            description = str_or_none(segment.get('description'))
-            image = str_or_none(segment.get('imageUrl'))
-            duration = int_or_none(segment.get('duration'), scale=1000)
-            date = None
-
-            list_item = xbmcgui.ListItem(label=title)
-            list_item.setProperty('IsPlayable', 'true')
-            
-            list_item.setInfo(
-                'video',
-                {
-                    'title': title,
-                    'plot': description,
-                    'duration': duration,
-                    'aired': date
-                }
-            )
-            list_item.setArt({
-                'thumb': image, # TODO
-                'poster': image,
-                'banner': banner,
-            })
-
-
-            u = ''
-            mode = 50
-            name = str_or_none(segment.get('id'))
-            url = sys.argv[0] + '?url=' + urllib.quote_plus(u) + '&mode=' + str(mode) + '&name=' + urllib.quote_plus(name)
-            xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=False)
     
     def getAuthString(self, url):
         #obtain the auth url
@@ -952,7 +847,7 @@ elif mode == 15:
     SRFPlayTV().build_topics_menu('Soon offline', page=page)
 elif mode == 16:
     SRFPlayTV().build_topics_menu('Trending', page=page)
-elif mode ==17:
+elif mode == 17:
     SRFPlayTV().build_dates_overview_menu()
 elif mode == 20:
     SRFPlayTV().build_show_menu(name, page_hash=page_hash)
