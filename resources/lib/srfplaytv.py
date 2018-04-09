@@ -314,12 +314,6 @@ class SRFPlayTV:
             self.build_episode_menu(vid, include_segments=False)
 
 
-    def build_newest_topics_menu(self):
-        self.build_topics_overview_menu('Newest')
-    
-    def build_most_clicked_topics_menu(self):
-        self.build_topics_overview_menu('Most clicked')
-
     def build_topics_overview_menu(self, newest_or_most_clicked):
         log('build_topics_overview_menu')
         if newest_or_most_clicked == 'Newest':
@@ -776,9 +770,9 @@ elif mode == 11:
 elif mode ==12:
     SRFPlayTV().build_newest_favourite_shows_menu()
 elif mode == 13:
-    SRFPlayTV().build_newest_topics_menu()
+    SRFPlayTV().build_topics_overview_menu('Newest')
 elif mode == 14:
-    SRFPlayTV().build_most_clicked_topics_menu()
+    SRFPlayTV().build_topics_overview_menu('Most clicked')
 elif mode == 15:
     SRFPlayTV().build_topics_menu('Soon offline', page=page)
 elif mode == 16:
