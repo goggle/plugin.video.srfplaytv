@@ -65,19 +65,13 @@ TIMEOUT = 15
 CONTENT_TYPE = 'files'
 DEBUG     = REAL_SETTINGS.getSetting('Enable_Debugging') == 'true'
 NUMBER_OF_EPISODES = 10
-MAIN_MENU_ITEMS = ['Newest shows', 'Recommodations', 'Topics', 'Shows by date', 'All shows']
-# MAIN_MENU = [
-#     ('Newest shows', '1', 1),
-#     ('Recommodations', '2', 1),
-#     ('Topics', '3', 1),
-#     ('Shows by date', '4', 1),
-#     ('All shows', '5', 1),
-# ]
+# MAIN_MENU_ITEMS = ['Newest shows', 'Recommodations', 'Topics', 'Shows by date', 'All shows']
+
 
 FAVOURITE_SHOWS_FILENAME = 'favourite_shows.json'
-WEEKDAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
-TODAY = 'Today'
-YESTERDAY = 'Yesterday'
+TODAY = LANGUAGE(30058)
+YESTERDAY = LANGUAGE(30059)
+WEEKDAYS = (LANGUAGE(30060), LANGUAGE(30061), LANGUAGE(30062), LANGUAGE(30063), LANGUAGE(30064), LANGUAGE(30065), LANGUAGE(30066))
 
 
 socket.setdefaulttimeout(TIMEOUT)
@@ -213,7 +207,6 @@ class SRFPlayTV:
         return purl
     
     def open_url(self, url, use_cache=True):
-        # TODO: Outsource this
         log('open_url, url = ' + str(url))
         try:
             if use_cache:
@@ -222,13 +215,13 @@ class SRFPlayTV:
                 request = urllib2.Request(url)
                 request.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0')
                 response = urllib2.urlopen(request, timeout=TIMEOUT).read()
-                self.cache.set(ADDON_NAME + '.openURL, url = %s'%url, response, expiration=datetime.timedelta(hours=6))
+                self.cache.set(ADDON_NAME + '.openURL, url = %s'%url, response, expiration=datetime.timedelta(hours=2))
             return self.cache.get(ADDON_NAME + '.openURL, url = %s'%url)
         except urllib2.URLError, e: log("openURL Failed! " + str(e), xbmc.LOGERROR)
         except socket.timeout, e: log("openURL Failed! " + str(e), xbmc.LOGERROR)
         except Exception, e:
             log("openURL Failed! " + str(e), xbmc.LOGERROR)
-            xbmcgui.Dialog().notification(ADDON_NAME, LANGUAGE(30001), ICON, 4000)
+            xbmcgui.Dialog().notification(ADDON_NAME, LANGUAGE(30100), ICON, 4000)
             return ''
 
     def read_favourite_show_ids(self):
@@ -251,13 +244,13 @@ class SRFPlayTV:
 
     def add_show_to_favourites(self, new_show_id):
         log('add_show_to_favourites: new_show_id = %s' % new_show_id)
-        show_ids = self.read_favourite_show_ids() # TODO: Use cache.
+        show_ids = self.read_favourite_show_ids()
         show_ids.append(new_show_id)
         self.write_favourite_show_ids(show_ids)
     
     def remove_show_from_favourites(self, old_show_id):
         log('remove_show_from_favourites: old_show_id = %s' % old_show_id)
-        show_ids = self.read_favourite_show_ids() # TODO: Use cache.
+        show_ids = self.read_favourite_show_ids()
         try:
             show_ids.remove(old_show_id)
         except ValueError:
@@ -266,19 +259,21 @@ class SRFPlayTV:
         self.write_favourite_show_ids(show_ids)
     
     def build_main_menu(self):
+        log('build_main_menu')
         main_menu_list = [
-            {'name': 'All shows', 'mode': 10},
-            {'name': 'Favourite shows', 'mode': 11},
-            {'name': 'Newest favourite shows', 'mode': 12},
-            {'name': 'Recommodations', 'mode': 16},
-            {'name': 'Newest shows (by topic)', 'mode': 13},
-            {'name': 'Most clicked shows (by topic)', 'mode': 14},
-            {'name': 'Soon offline', 'mode': 15},
-            {'name': 'Shows by date', 'mode': 17},
+            {'name': LANGUAGE(30050), 'mode': 10},
+            {'name': LANGUAGE(30051), 'mode': 11},
+            {'name': LANGUAGE(30052), 'mode': 12},
+            {'name': LANGUAGE(30053), 'mode': 16},
+            {'name': LANGUAGE(30054), 'mode': 13},
+            {'name': LANGUAGE(30055), 'mode': 14},
+            {'name': LANGUAGE(30056), 'mode': 15},
+            {'name': LANGUAGE(30057), 'mode': 17},
         ]
         for mme in main_menu_list:
             list_item = xbmcgui.ListItem(mme['name'])
             list_item.setProperty('IsPlayable', 'false')
+            list_item.setArt({'thumb': ICON})
             u = self.build_url(mode=mme['mode'], name=mme['name'])
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
@@ -292,7 +287,6 @@ class SRFPlayTV:
                 name = YESTERDAY
             else:
                 name = WEEKDAYS[d.weekday()] + ', %s' % d.strftime('%d.%m.%Y')
-            # return '%s, %s' % (name, d.strftime('%d.%m.%Y'))
             return name
 
         current_date = datetime.date.today()
@@ -301,11 +295,10 @@ class SRFPlayTV:
         for i in range(number_of_days):
             d = current_date + datetime.timedelta(-i)
             list_item = xbmcgui.ListItem(label=folder_name(d))
-            u = ''
+            list_item.setArt({'thumb': ICON})
             name = d.strftime('%d-%m-%Y')
             u = self.build_url(mode=24, name=name)
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
-
 
     def build_date_menu(self, date_string):
         log('build_date_menu')
@@ -373,19 +366,12 @@ class SRFPlayTV:
         id_regex = r'\"id\"\s*:\s*\"(?P<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\"'
         id_list = [m.group('id') for m in re.finditer(id_regex, response)]
 
-        # views_regex = r'\"views\"\s*:\s*(?P<views>\d+)'
-        # views_list = [int_or_none(m.group('views')) for m in re.finditer(views_regex, response)]
-
         try:
             page = int(page)
         except TypeError:
             page = 1
         
-        # page_range = ((page - 1) * NUMBER_OF_EPISODES):(page * NUMBER_OF_EPISODES)
-        # page_range = range((page - 1) * NUMBER_OF_EPISODES, page * NUMBER_OF_EPISODES)
         reduced_id_list = id_list[(page - 1) * NUMBER_OF_EPISODES : page * NUMBER_OF_EPISODES]
-        # reduced_views_list = views_list[(page - 1) * NUMBER_OF_EPISODES : page * NUMBER_OF_EPISODES]
-        # for (vid, view) in zip(reduced_id_list, reduced_views_list):
         view = None
         for vid in reduced_id_list:
             self.build_episode_menu(vid, include_segments=False)
@@ -394,17 +380,11 @@ class SRFPlayTV:
             vid = id_list[page*NUMBER_OF_EPISODES]
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
-            # mode = 22 if newest_or_most_clicked=='Newest' else 23
             name = topic_id if topic_id else ''
             u = self.build_url(mode=mode, name=name, page=page+1)
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=next_item, isFolder=True)
         except IndexError:
-            return
-
-        # if id_list:
-        #     for i in range(10):
-        #         self.build_episode_menu(id_list[i], include_segments=False)
-        
+            return        
 
     def build_favourite_shows_menu(self):
         log('build_favourite_shows_menu')
@@ -551,7 +531,9 @@ class SRFPlayTV:
                     'title': episode_title,
                     'plot': episode_description,
                     'duration': episode_duration,
+                    'dateadded': episode_date,
                     'aired': episode_date,
+                    # 'tvshowtitle': 'Hello World',
                 }
             )
             thumbnail = episode_image + '/scale/width/448' if episode_image else None
