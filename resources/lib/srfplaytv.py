@@ -465,7 +465,7 @@ class SRFPlayTV:
 
             try:
                 image_url = str_or_none(jse['Image']['ImageRepresentations']['ImageRepresentation'][0]['url'])
-                thumbnail = image_url + '/scale/width/448' if image_url else None
+                thumbnail = image_url + '/scale/width/668' if image_url else ICON
             except (KeyError, IndexError):
                 image_url = FANART
                 thumbnail = ICON
@@ -538,7 +538,7 @@ class SRFPlayTV:
                     'aired': episode_date,
                 }
             )
-            thumbnail = episode_image + '/scale/width/448' if episode_image else None
+            thumbnail = episode_image + '/scale/width/668' if episode_image else ICON
             list_item.setArt({
                 'thumb': thumbnail,
                 'poster': episode_image,
