@@ -52,6 +52,7 @@ REAL_SETTINGS = xbmcaddon.Addon(id=ADDON_ID)
 ADDON_NAME    = REAL_SETTINGS.getAddonInfo('name')
 ADDON_VERSION = REAL_SETTINGS.getAddonInfo('version')
 ICON          = REAL_SETTINGS.getAddonInfo('icon')
+FANART        = REAL_SETTINGS.getAddonInfo('fanart')
 LANGUAGE      = REAL_SETTINGS.getLocalizedString
 SEGMENTS = REAL_SETTINGS.getSetting('Enable_Show_Segments') == 'true'
 SEGMENTS_TOPICS = REAL_SETTINGS.getSetting('Enable_Settings_Topics') == 'true'
@@ -223,6 +224,14 @@ class SRFPlayTV:
             log("openURL Failed! " + str(e), xbmc.LOGERROR)
             xbmcgui.Dialog().notification(ADDON_NAME, LANGUAGE(30100), ICON, 4000)
             return ''
+    
+    def extract_id_list(self, url):
+        log('extract_id_list, url = %s' % url)
+        response = self.open_url(url)
+        response = response.replace('&quot;', '"')
+        id_regex = r'\"id\"\s*:\s*\"(?P<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\"'
+        id_list = [m.group('id') for m in re.finditer(id_regex, response)]
+        return id_list
 
     def read_favourite_show_ids(self):
         file_path = os.path.join(PROFILE, FAVOURITE_SHOWS_FILENAME)
@@ -303,12 +312,8 @@ class SRFPlayTV:
     def build_date_menu(self, date_string):
         log('build_date_menu')
 
-        # TODO: No code duplication
         url = HOST_URL + '/play/tv/programDay/%s' % date_string
-        response = self.open_url(url)
-        response = response.replace('&quot;', '"')
-        id_regex = r'\"id\"\s*:\s*\"(?P<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\"'
-        id_list = [m.group('id') for m in re.finditer(id_regex, response)]
+        id_list = self.extract_id_list(url)
 
         for vid in id_list:
             self.build_episode_menu(vid, include_segments=False)
@@ -355,11 +360,7 @@ class SRFPlayTV:
             log('build_topics_menu: Unknown mode.')
             return
         
-        response = self.open_url(url)
-        response = response.replace('&quot;', '"')
-        id_regex = r'\"id\"\s*:\s*\"(?P<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\"'
-        id_list = [m.group('id') for m in re.finditer(id_regex, response)]
-
+        id_list = self.extract_id_list(url)
         try:
             page = int(page)
         except TypeError:
@@ -422,17 +423,21 @@ class SRFPlayTV:
         log('build_all_shows_menu')
         json_url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + BU + '/tv/assetGroup/editorialPlayerAlphabetical.json'
         json_response = json.loads(self.open_url(json_url))
-        show_list = json_response['AssetGroups']['Show']
+        try:
+            show_list = json_response['AssetGroups']['Show']
+        except KeyError:
+            log('build_all_shows_menu: No shows found.')
+            return
         favourite_show_ids = self.read_favourite_show_ids() if favids is None else favids # TODO: use cache if possible
-        # log(str(type(show_list)))
         if type(show_list) != list:
-            log('No shows found.')
+            log('build_all_shows_menu: No shows found.')
             return
         for jse in show_list:
             try:
                 title = str_or_none(jse['title'])
                 show_id = str_or_none(jse['id'])
             except KeyError:
+                log('build_all_shows_menu: Skipping, no title or id found.')
                 continue
 
             # Skip if we build the 'favourite show menu' and the current
@@ -441,7 +446,7 @@ class SRFPlayTV:
                 continue
 
             list_item = xbmcgui.ListItem(label=title)
-            list_item.setProperty('IsPlayable', 'true')
+            list_item.setProperty('IsPlayable', 'false')
             list_item.setInfo(
                 'video',
                 {
@@ -461,9 +466,9 @@ class SRFPlayTV:
             try:
                 image_url = str_or_none(jse['Image']['ImageRepresentations']['ImageRepresentation'][0]['url'])
                 thumbnail = image_url + '/scale/width/448' if image_url else None
-            except KeyError:
-                image_url = thumbnail = None
-            # TODO: Add default thumbnail.
+            except (KeyError, IndexError):
+                image_url = FANART
+                thumbnail = ICON
 
             list_item.setArt({
                 'thumb': thumbnail,
@@ -473,7 +478,7 @@ class SRFPlayTV:
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=True)        
     
     def build_show_menu(self, show_id, page_hash=None):
-        log('build_show_menu, show_id = %s' % show_id)
+        log('build_show_menu, show_id = %s, page_hash=%s' % (show_id, page_hash))
         current_month_date = datetime.date.today().strftime('%m-%Y') # TODO: This depends on the local time settings
         if not page_hash:
             json_url = '%s/play/tv/show/%s/latestEpisodes?numberOfEpisodes=%d&tillMonth=%s' % (HOST_URL, show_id, NUMBER_OF_EPISODES, current_month_date)
@@ -505,17 +510,21 @@ class SRFPlayTV:
                 episode_id = str_or_none(episode_entry['id'])
                 episode_title = str_or_none(episode_entry['title'])
             except KeyError:
-                log('Video ID and/or title for show %s cannot be extracted.' % show_id)
+                log('Video id and/or title for show %s cannot be extracted.' % show_id)
                 continue
             episode_description = str_or_none(episode_entry.get('description'))
             episode_image = str_or_none(episode_entry.get('imageUrl'))
             episode_duration = str_or_none(episode_entry.get('duration'))
             if episode_duration:
                 episode_duration = get_duration(episode_duration)
-            episode_date = str_or_none(episode_entry.get('date'))
-            if episode_date:
-                episode_date = convert_date_string(episode_date)
-            
+            episode_datetime = str_or_none(episode_entry.get('date'))
+            episode_date = None
+            if episode_datetime:
+                episode_datetime = convert_date_string(episode_datetime)
+                date_regex = r'\d{4}-\d{2}-\d{2}'
+                date_match = re.match(date_regex, episode_datetime)
+                if date_match:
+                    episode_date = date_match.group()
 
             list_item = xbmcgui.ListItem(label=episode_title)
             list_item.setProperty('IsPlayable', 'true')
@@ -525,9 +534,8 @@ class SRFPlayTV:
                     'title': episode_title,
                     'plot': episode_description,
                     'duration': episode_duration,
-                    'dateadded': episode_date,
+                    # 'dateadded': episode_datetime,
                     'aired': episode_date,
-                    # 'tvshowtitle': 'Hello World',
                 }
             )
             thumbnail = episode_image + '/scale/width/448' if episode_image else None
@@ -539,10 +547,7 @@ class SRFPlayTV:
 
             segments = episode_entry.get('segments')
             has_segments = True if (type(segments) == list and len(segments) > 0) else False
-
-
             is_folder = True if has_segments and SEGMENTS else False
-            # is_folder = True
             
             mode = 21 if is_folder else 50
             url = self.build_url(mode=mode, name=episode_id)
