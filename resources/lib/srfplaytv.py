@@ -62,7 +62,7 @@ PROFILE = xbmc.translatePath(REAL_SETTINGS.getAddonInfo('profile') ).decode("utf
 
 BU = 'srf'
 HOST_URL = 'https://www.srf.ch'
-TIMEOUT = 15
+TIMEOUT = 30
 CONTENT_TYPE = 'files'
 DEBUG     = REAL_SETTINGS.getSetting('Enable_Debugging') == 'true'
 NUMBER_OF_EPISODES = 10
@@ -192,6 +192,15 @@ class SRFPlayTV:
         self.cache = SimpleCache()
 
     def build_url(self, mode=None, name=None, url=None, hash=None, page=None):
+        """Build a URL for this Kodi plugin.
+
+        Keyword arguments:
+        mode -- an integer representing the mode
+        name -- a string containing some information, e.g. a video id
+        url  -- a plugin URL, if another plugin/script needs to called
+        hash -- a string (used to get additional videos through the API)
+        page -- an integer used to indicate the current page in the list of items
+        """
         if mode:
             mode = str(mode)
         if page:
@@ -207,9 +216,17 @@ class SRFPlayTV:
                 added = True        
         return purl
     
-    def open_url(self, url, use_cache=True):
+    def open_url(self, url, use_cache=False): # TODO: change use_cache to true
+        """Open and read the content given by a URL.
+
+        Keyword arguments:
+        url       -- the URL to open as a string
+        use_cache -- boolean to indicate if the cache provided by the 
+                     Kodi module SimpleCache should be used (default: True)
+        """
         log('open_url, url = ' + str(url))
         try:
+            cacheResponse = None
             if use_cache:
                 cacheResponse = self.cache.get(ADDON_NAME + '.openURL, url = %s'%url)
             if not cacheResponse:
@@ -226,6 +243,13 @@ class SRFPlayTV:
             return ''
     
     def extract_id_list(self, url):
+        """
+        Opens a webpage and extracts video ids (of the form "id": "<vid>")
+        from JavaScript snippets.
+
+        Keyword argmuents:
+        url -- the URL of the webpage
+        """
         log('extract_id_list, url = %s' % url)
         response = self.open_url(url)
         response = response.replace('&quot;', '"')
@@ -234,6 +258,11 @@ class SRFPlayTV:
         return id_list
 
     def read_favourite_show_ids(self):
+        """
+        Reads the show ids from the file defined by the global
+        variable FAVOURITE_SHOWS_FILENAMES and returns a list
+        containing these ids.
+        """
         file_path = os.path.join(PROFILE, FAVOURITE_SHOWS_FILENAME)
         if not os.path.exists(file_path):
             return []
@@ -246,18 +275,40 @@ class SRFPlayTV:
                 return []
     
     def write_favourite_show_ids(self, show_ids):
+        """
+        Writes a list of show ids to the file defined by the global
+        variable FAVOURITE_SHOWS_FILENAME.
+
+        Keyword arguments:
+        show_ids -- a list of show ids (as strings)
+        """
         show_ids_dict_list = [{'id': show_id} for show_id in show_ids]
         file_path = os.path.join(PROFILE, FAVOURITE_SHOWS_FILENAME)
         with open(file_path, 'w') as f:
             json.dump(show_ids_dict_list, f)
 
     def add_show_to_favourites(self, new_show_id):
+        """
+        Adds a show to the list of favourite shows and writes these
+        shows to the file defined by the global variable FAVOURITE_SHOWS_FILENAME.
+
+        Keyword arguments:
+        new_show_id -- a string containing the id of the show to add to the favourites
+        """
         log('add_show_to_favourites: new_show_id = %s' % new_show_id)
         show_ids = self.read_favourite_show_ids()
         show_ids.append(new_show_id)
         self.write_favourite_show_ids(show_ids)
     
     def remove_show_from_favourites(self, old_show_id):
+        """
+        Removes a show from the list of favourite shows and writes the remaining
+        show ids to the file defined by the global variable FAVOURITE_SHOWS_FILENAME.
+
+        Keyword arguments:
+        old_show_id -- a string containing the id of the show to remove from
+                       the favourites
+        """
         log('remove_show_from_favourites: old_show_id = %s' % old_show_id)
         show_ids = self.read_favourite_show_ids()
         try:
@@ -268,16 +319,30 @@ class SRFPlayTV:
         self.write_favourite_show_ids(show_ids)
     
     def build_main_menu(self):
+        """
+        Builds the main menu of the plugin:
+
+        All shows
+        Favourite shows
+        Newest favourite shows
+        Recommodations
+        Newest shows (by topic)
+        Most clicked shows (by topic)
+        Soon offline
+        Shows by date
+        (SRF.ch live)
+        """
         log('build_main_menu')
         main_menu_list = [
-            {'name': LANGUAGE(30050), 'mode': 10},
-            {'name': LANGUAGE(30051), 'mode': 11},
-            {'name': LANGUAGE(30052), 'mode': 12},
-            {'name': LANGUAGE(30053), 'mode': 16},
-            {'name': LANGUAGE(30054), 'mode': 13},
-            {'name': LANGUAGE(30055), 'mode': 14},
-            {'name': LANGUAGE(30056), 'mode': 15},
-            {'name': LANGUAGE(30057), 'mode': 17},
+            {'name': LANGUAGE(30050), 'mode': 10}, # All shows
+            {'name': LANGUAGE(30051), 'mode': 11}, # Favourite shows
+            {'name': LANGUAGE(30052), 'mode': 12}, # Newest favourite shows
+            {'name': LANGUAGE(30053), 'mode': 16}, # Recommodations
+            {'name': LANGUAGE(30054), 'mode': 13}, # Newest shows (by topic)
+            {'name': LANGUAGE(30055), 'mode': 14}, # Most clicked shows (by topic)
+            {'name': LANGUAGE(30056), 'mode': 15}, # Soon offline
+            {'name': LANGUAGE(30057), 'mode': 17}, # Shows by date
+            {'name': LANGUAGE(30070), 'mode': 18}, # SRF.ch live
         ]
         for mme in main_menu_list:
             list_item = xbmcgui.ListItem(mme['name'])
@@ -287,6 +352,10 @@ class SRFPlayTV:
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
     def build_dates_overview_menu(self):
+        """
+        Builds the menu containing the folders for episodes of
+        the last 10 days.
+        """
         log('build_dates_overview_menu')
         def folder_name(d):
             today = datetime.date.today()
@@ -310,7 +379,14 @@ class SRFPlayTV:
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
 
     def build_date_menu(self, date_string):
-        log('build_date_menu')
+        """
+        Builds a list of episodes of a given date.
+
+        Keyword arguments:
+        date_string -- a string representing date in the form %d-%m-%Y, 
+                       e.g. 12-03-2017
+        """
+        log('build_date_menu, date_string = %s' % date_string)
 
         url = HOST_URL + '/play/tv/programDay/%s' % date_string
         id_list = self.extract_id_list(url)
@@ -320,6 +396,13 @@ class SRFPlayTV:
 
 
     def build_topics_overview_menu(self, newest_or_most_clicked):
+        """
+        Builds a list of folders, where each folders represents a 
+        topic (e.g. News).
+
+        Keyword arguments:
+        newest_or_most_clicked -- a string (either 'Newest' or 'Most clicked')
+        """
         log('build_topics_overview_menu')
         if newest_or_most_clicked == 'Newest':
             mode = 22
@@ -342,6 +425,16 @@ class SRFPlayTV:
                 xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=list_item, isFolder=True)
     
     def build_topics_menu(self, name, topic_id=None, page=1):
+        """
+        Builds a list of videos (can also be folders) for a given topic.
+
+        Keyword arguments:
+        name     -- the type of the list, can be 'Newest', 'Most clicked', 'Soon offline'
+                    or 'Trending'.
+        topic_id -- the SRF topic id for the given topic, this is only needed for 
+                    the types 'Newest' and 'Most clicked' (default: None)
+        page     -- an integer representing the current page in the list
+        """
         log('build_topics_menu')
         number_of_videos = 50
         if name == 'Newest':
@@ -382,6 +475,9 @@ class SRFPlayTV:
             return        
 
     def build_favourite_shows_menu(self):
+        """
+        Builds a list of folders for the favourite shows.
+        """
         log('build_favourite_shows_menu')
         favourite_show_ids = self.read_favourite_show_ids()
         self.build_all_shows_menu(favids=favourite_show_ids)
@@ -420,6 +516,10 @@ class SRFPlayTV:
 
     
     def build_all_shows_menu(self, favids=None):
+        """
+        Builds a list of folders containing the names of all the current
+        SRF shows.
+        """
         log('build_all_shows_menu')
         json_url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + BU + '/tv/assetGroup/editorialPlayerAlphabetical.json'
         json_response = json.loads(self.open_url(json_url))
@@ -475,9 +575,44 @@ class SRFPlayTV:
                 'poster': image_url,
             })
             url = self.build_url(mode=20, name=show_id)
-            xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=True)        
+            xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=True)
+
+    def build_live_menu(self):
+        def get_live_ids():
+            # TODO: implement this
+            return ['384082', '384083']
+        
+        live_ids = get_live_ids()
+        for lid in live_ids:
+            api_url = 'https://event.api.swisstxt.ch/v1/events/srf/byEventItemId/?eids=%s' % lid
+            try:
+                live_json = json.loads(self.open_url(api_url))
+                entry = live_json[0]
+            except:
+                continue
+            title = entry.get('title')
+            stream_url = entry.get('hls')
+            image = entry.get('imageUrl')
+            item = xbmcgui.ListItem(label=title)
+            item.setProperty('IsPlayable', 'true')
+            item.setArt({'thumb': image})
+            u = self.build_url(mode=51, name=stream_url)
+            xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, item, isFolder=False)
+    
+    def play_livestream(self, stream_url):
+        auth_url = self._get_tokenized_src(stream_url)
+        play_item = xbmcgui.ListItem('Live', path=auth_url)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, play_item)
     
     def build_show_menu(self, show_id, page_hash=None):
+        """
+        Builds a list of videos (can be folders in case of segmented videos) for a show 
+        given by its show id.
+
+        Keyword arguments:
+        show_id   -- the SRF id of the show
+        page_hash -- the page hash to get the list of another page (default: None)
+        """
         log('build_show_menu, show_id = %s, page_hash=%s' % (show_id, page_hash))
         current_month_date = datetime.date.today().strftime('%m-%Y') # TODO: This depends on the local time settings
         if not page_hash:
@@ -500,8 +635,8 @@ class SRFPlayTV:
             if match:
                 next_page_hash = match.group('hash')
 
-        json_episode_list = json_response.get('episodes')
-        if type(json_episode_list) != list:
+        json_episode_list = json_response.get('episodes', [])
+        if len(json_episode_list) == 0:
             log('No episodes for show %s found.' % show_id)
             return
         
@@ -561,7 +696,6 @@ class SRFPlayTV:
             next_item.setProperty('IsPlayable', 'false')
             url = self.build_url(mode=20, name=show_id)
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, next_item, isFolder=True)
-    
 
     def build_episode_menu(self, video_id, include_segments=True):
         log('build_episode_menu, video_id = %s, include_segments = %s' % (video_id, include_segments))
@@ -686,6 +820,12 @@ class SRFPlayTV:
 
     
     def play_video(self, video_id):
+        """
+        Gets the video stream information of a video and starts to play it.
+
+        Keyword arguments:
+        video_id -- the SRF video of the video to play
+        """
         log('Playing video %s.' % video_id)
         json_url = 'https://il.srgssr.ch/integrationlayer/2.0/%s/mediaComposition/video/%s.json' % (BU, video_id)
         json_response = json.loads(self.open_url(json_url))
@@ -784,6 +924,8 @@ elif mode == 16:
     SRFPlayTV().build_topics_menu('Trending', page=page)
 elif mode == 17:
     SRFPlayTV().build_dates_overview_menu()
+elif mode == 18:
+    SRFPlayTV().build_live_menu()
 elif mode == 20:
     SRFPlayTV().build_show_menu(name, page_hash=page_hash)
 elif mode == 21:
@@ -796,6 +938,8 @@ elif mode == 24:
     SRFPlayTV().build_date_menu(name)
 elif mode == 50:
     SRFPlayTV().play_video(name)
+elif mode == 51:
+    SRFPlayTV().play_livestream(name)
 elif mode == 100:
     SRFPlayTV().add_show_to_favourites(name)
 elif mode == 101:
