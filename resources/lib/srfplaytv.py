@@ -342,7 +342,7 @@ class SRFPlayTV:
             {'name': LANGUAGE(30055), 'mode': 14}, # Most clicked shows (by topic)
             {'name': LANGUAGE(30056), 'mode': 15}, # Soon offline
             {'name': LANGUAGE(30057), 'mode': 17}, # Shows by date
-            {'name': LANGUAGE(30070), 'mode': 18}, # SRF.ch live
+            # {'name': LANGUAGE(30070), 'mode': 18}, # SRF.ch live
         ]
         for mme in main_menu_list:
             list_item = xbmcgui.ListItem(mme['name'])
@@ -513,7 +513,6 @@ class SRFPlayTV:
         sorted_list_of_episodes_dict = sorted(list_of_episodes_dict, key=lambda k: k['aired'], reverse=True)
         for episode in sorted_list_of_episodes_dict:
             self.build_entry(episode)
-
     
     def build_all_shows_menu(self, favids=None):
         """
@@ -698,6 +697,15 @@ class SRFPlayTV:
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, next_item, isFolder=True)
 
     def build_episode_menu(self, video_id, include_segments=True):
+        """
+        Builds a list entry for a episode by a given video id. The segment entries for 
+        that episode can be included too.
+
+        Keyword arguments:
+        video_id         -- the SRF id of the video
+        include_segments -- indicates if the segments (if available) of the video
+                            should be included in the list (default: True)
+        """
         log('build_episode_menu, video_id = %s, include_segments = %s' % (video_id, include_segments))
         json_url = 'https://il.srgssr.ch/integrationlayer/2.0/%s/mediaComposition/video/%s.json' % (BU, video_id)
         json_response = json.loads(self.open_url(json_url))
@@ -759,6 +767,15 @@ class SRFPlayTV:
         
     
     def build_entry(self, json_entry, banner=None, is_folder=False):
+        """
+        Builds an list item for a video or folder by giving the json part, 
+        describing this video.
+
+        Keyword arguments:
+        json_entry -- the part of the json describing the video
+        banner     -- URL of the show's banner (default: None)
+        is_folder  -- indicates if the item is a folder (default: False)
+        """
         log('build_entry')
         title = json_entry.get('title')
         vid = json_entry.get('id')
@@ -768,11 +785,6 @@ class SRFPlayTV:
         date = None # FIXME: "date": "2018-03-21T21:50:48+01:00"
 
         list_item = xbmcgui.ListItem(label=title)
-        # list_item.setProperty('IsPlayable', 'true')
-        if is_folder:
-            list_item.setProperty('IsPlayable', 'false')
-        else:
-            list_item.setProperty('IsPlayable', 'true')
         list_item.setInfo(
             'video',
             {
@@ -788,8 +800,12 @@ class SRFPlayTV:
             'poster': image,
             'banner': banner,
         })
-
-        url = self.build_url(mode=21, name=vid) if is_folder else self.build_url(mode=50, name=vid)
+        if is_folder:
+            list_item.setProperty('IsPlayable', 'false')
+            url = self.build_url(mode=21, name=vid)
+        else:
+            list_item.setProperty('IsPlayable', 'true')
+            url = self.build_url(mode=50, name=vid)
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=is_folder)
 
     
@@ -912,7 +928,7 @@ elif mode == 10:
     SRFPlayTV().build_all_shows_menu()
 elif mode == 11:
     SRFPlayTV().build_favourite_shows_menu()
-elif mode ==12:
+elif mode == 12:
     SRFPlayTV().build_newest_favourite_shows_menu()
 elif mode == 13:
     SRFPlayTV().build_topics_overview_menu('Newest')
