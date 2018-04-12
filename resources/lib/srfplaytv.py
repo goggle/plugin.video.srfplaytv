@@ -46,7 +46,6 @@ except NameError:
     compat_str = str # Python3 
 
 
-
 ADDON_ID= 'plugin.video.srfplaytv'
 REAL_SETTINGS = xbmcaddon.Addon(id=ADDON_ID)
 ADDON_NAME    = REAL_SETTINGS.getAddonInfo('name')
@@ -342,7 +341,7 @@ class SRFPlayTV:
             {'name': LANGUAGE(30055), 'mode': 14}, # Most clicked shows (by topic)
             {'name': LANGUAGE(30056), 'mode': 15}, # Soon offline
             {'name': LANGUAGE(30057), 'mode': 17}, # Shows by date
-            # {'name': LANGUAGE(30070), 'mode': 18}, # SRF.ch live
+            {'name': LANGUAGE(30070), 'mode': 18}, # SRF.ch live
         ]
         for mme in main_menu_list:
             list_item = xbmcgui.ListItem(mme['name'])
@@ -579,7 +578,7 @@ class SRFPlayTV:
     def build_live_menu(self):
         def get_live_ids():
             # TODO: implement this
-            return ['384082', '384083']
+            return ['386514', '386460']
         
         live_ids = get_live_ids()
         for lid in live_ids:
