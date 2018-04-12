@@ -64,6 +64,10 @@ msgctxt "#30057"
 msgid "Sendungen nach Datum"
 msgstr ""
 
+msgctxt "#30070"
+msgid "SRF.CH Live"
+msgstr ""
+
 msgctxt "#30058"
 msgid "Heute"
 msgstr ""

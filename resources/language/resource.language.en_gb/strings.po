@@ -64,6 +64,10 @@ msgctxt "#30057"
 msgid "Shows by date"
 msgstr ""
 
+msgctxt "#30070"
+msgid "SRF.CH Live"
+msgstr ""
+
 msgctxt "#30058"
 msgid "Today"
 msgstr ""
@@ -100,6 +104,6 @@ msgctxt "#30066"
 msgid "Sunday"
 msgstr ""
 
-msgcctxt "#30100"
+msgctxt "#30100"
 msgid "Failed to open URL."
 msgstr ""
