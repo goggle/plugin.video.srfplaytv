@@ -341,7 +341,7 @@ class SRFPlayTV:
             {'name': LANGUAGE(30055), 'mode': 14}, # Most clicked shows (by topic)
             {'name': LANGUAGE(30056), 'mode': 15}, # Soon offline
             {'name': LANGUAGE(30057), 'mode': 17}, # Shows by date
-            {'name': LANGUAGE(30070), 'mode': 18}, # SRF.ch live
+            # {'name': LANGUAGE(30070), 'mode': 18}, # SRF.ch live
         ]
         for mme in main_menu_list:
             list_item = xbmcgui.ListItem(mme['name'])
@@ -402,7 +402,7 @@ class SRFPlayTV:
         Keyword arguments:
         newest_or_most_clicked -- a string (either 'Newest' or 'Most clicked')
         """
-        log('build_topics_overview_menu')
+        log('build_topics_overview_menu, newest_or_most_clicked = %s' % newest_or_most_clicked)
         if newest_or_most_clicked == 'Newest':
             mode = 22
         elif newest_or_most_clicked == 'Most clicked':
@@ -434,7 +434,7 @@ class SRFPlayTV:
                     the types 'Newest' and 'Most clicked' (default: None)
         page     -- an integer representing the current page in the list
         """
-        log('build_topics_menu')
+        log('build_topics_menu, name = %s, topic_id = %s, page = %s' % (name, topic_id, page))
         number_of_videos = 50
         if name == 'Newest':
             url = HOST_URL + '/play/tv/topic/%s/latest?numberOfVideos=%s' % (topic_id, number_of_videos)
@@ -459,7 +459,6 @@ class SRFPlayTV:
             page = 1
         
         reduced_id_list = id_list[(page - 1) * NUMBER_OF_EPISODES : page * NUMBER_OF_EPISODES]
-        view = None
         for vid in reduced_id_list:
             self.build_episode_menu(vid, include_segments=False)
         
@@ -639,53 +638,9 @@ class SRFPlayTV:
             return
         
         for episode_entry in json_episode_list:
-            try:
-                episode_id = str_or_none(episode_entry['id'])
-                episode_title = str_or_none(episode_entry['title'])
-            except KeyError:
-                log('Video id and/or title for show %s cannot be extracted.' % show_id)
-                continue
-            episode_description = str_or_none(episode_entry.get('description'))
-            episode_image = str_or_none(episode_entry.get('imageUrl'))
-            episode_duration = str_or_none(episode_entry.get('duration'))
-            if episode_duration:
-                episode_duration = get_duration(episode_duration)
-            episode_datetime = str_or_none(episode_entry.get('date'))
-            episode_date = None
-            if episode_datetime:
-                episode_datetime = convert_date_string(episode_datetime)
-                date_regex = r'\d{4}-\d{2}-\d{2}'
-                date_match = re.match(date_regex, episode_datetime)
-                if date_match:
-                    episode_date = date_match.group()
-
-            list_item = xbmcgui.ListItem(label=episode_title)
-            list_item.setProperty('IsPlayable', 'true')
-            list_item.setInfo(
-                'video',
-                {
-                    'title': episode_title,
-                    'plot': episode_description,
-                    'duration': episode_duration,
-                    # 'dateadded': episode_datetime,
-                    'aired': episode_date,
-                }
-            )
-            thumbnail = episode_image + '/scale/width/668' if episode_image else ICON
-            list_item.setArt({
-                'thumb': thumbnail,
-                'poster': episode_image,
-                'banner': banner_image,
-            })
-
-            segments = episode_entry.get('segments')
-            has_segments = True if (type(segments) == list and len(segments) > 0) else False
-            is_folder = True if has_segments and SEGMENTS else False
-            
-            mode = 21 if is_folder else 50
-            url = self.build_url(mode=mode, name=episode_id)
-            xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=is_folder)
-
+            segments = episode_entry.get('segments', [])
+            enable_segments = True if SEGMENTS and len(segments) > 0 else False
+            self.build_entry(episode_entry, banner=banner_image, is_folder=enable_segments)
 
         if next_page_hash and page_hash != next_page_hash:
             log('page_hash: %s' % page_hash)
@@ -781,6 +736,8 @@ class SRFPlayTV:
         description = json_entry.get('description')
         image = json_entry.get('imageUrl')
         duration = int_or_none(json_entry.get('duration'), scale=1000)
+        if not duration:
+            duration = get_duration(json_entry.get('duration'))
         date = None # FIXME: "date": "2018-03-21T21:50:48+01:00"
 
         list_item = xbmcgui.ListItem(label=title)
