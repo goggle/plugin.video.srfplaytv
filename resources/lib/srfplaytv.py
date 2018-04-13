@@ -250,8 +250,12 @@ class SRFPlayTV:
         url -- the URL of the webpage
         """
         log('extract_id_list, url = %s' % url)
-        response = self.open_url(url)
+        response = str_or_none(self.open_url(url), default='')
+        if not response:
+            log('No video ids found on %s' % url)
         response = response.replace('&quot;', '"')
+        # Note: other business units might have other ids, so this is only expected to
+        # work for videos of SRF.
         id_regex = r'\"id\"\s*:\s*\"(?P<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\"'
         id_list = [m.group('id') for m in re.finditer(id_regex, response)]
         return id_list
