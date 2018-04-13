@@ -391,7 +391,7 @@ class SRFPlayTV:
         id_list = self.extract_id_list(url)
 
         for vid in id_list:
-            self.build_episode_menu(vid, include_segments=False)
+            self.build_episode_menu(vid, include_segments=False, segment_option=SEGMENTS)
 
     def build_topics_overview_menu(self, newest_or_most_clicked):
         """
@@ -651,7 +651,7 @@ class SRFPlayTV:
             url = self.build_url(mode=20, name=show_id, hash=next_page_hash)
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, next_item, isFolder=True)
 
-    def build_episode_menu(self, video_id, include_segments=True):
+    def build_episode_menu(self, video_id, include_segments=True, segment_option=SEGMENTS_TOPICS):
         """
         Builds a list entry for a episode by a given video id. The segment entries for 
         that episode can be included too.
@@ -660,6 +660,7 @@ class SRFPlayTV:
         video_id         -- the SRF id of the video
         include_segments -- indicates if the segments (if available) of the video
                             should be included in the list (default: True)
+        segment_option   -- which segment option to use (default: SEGMENTS_TOPCICS)
         """
         log('build_episode_menu, video_id = %s, include_segments = %s' % (video_id, include_segments))
         json_url = 'https://il.srgssr.ch/integrationlayer/2.0/%s/mediaComposition/video/%s.json' % (BU, video_id)
@@ -704,7 +705,7 @@ class SRFPlayTV:
                 for segment in json_segment_list:
                     self.build_entry(segment, banner)
             else:
-                if SEGMENTS_TOPICS and len(json_segment_list) > 0:
+                if segment_option and len(json_segment_list) > 0:
                     self.build_entry(json_chapter, banner, is_folder=True)
                 else:
                     self.build_entry(json_chapter, banner)
