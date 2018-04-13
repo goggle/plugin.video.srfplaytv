@@ -647,7 +647,7 @@ class SRFPlayTV:
             log('next_hash: %s' % next_page_hash)
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
-            url = self.build_url(mode=20, name=show_id)
+            url = self.build_url(mode=20, name=show_id, hash=next_page_hash)
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, next_item, isFolder=True)
 
     def build_episode_menu(self, video_id, include_segments=True):
@@ -717,8 +717,6 @@ class SRFPlayTV:
                 log('build_episode_menu: No segment ID found for video_id %s' % video_id)
                 return
             self.build_entry(json_segment, banner)
-
-        
     
     def build_entry(self, json_entry, banner=None, is_folder=False):
         """
