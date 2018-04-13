@@ -393,7 +393,6 @@ class SRFPlayTV:
         for vid in id_list:
             self.build_episode_menu(vid, include_segments=False)
 
-
     def build_topics_overview_menu(self, newest_or_most_clicked):
         """
         Builds a list of folders, where each folders represents a 
@@ -418,6 +417,7 @@ class SRFPlayTV:
         for elem in topics_json:
             list_item = xbmcgui.ListItem(label=elem.get('title'))
             list_item.setProperty('IsPlayable', 'false')
+            list_item.setArt({'thumb': ICON})
             name = elem.get('id')
             if name:
                 u = self.build_url(mode=mode, name=name)
@@ -466,6 +466,7 @@ class SRFPlayTV:
             vid = id_list[page*NUMBER_OF_EPISODES]
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
+            next_item.setArt({'thumb': ICON})
             name = topic_id if topic_id else ''
             u = self.build_url(mode=mode, name=name, page=page+1)
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=next_item, isFolder=True)
@@ -480,7 +481,6 @@ class SRFPlayTV:
         favourite_show_ids = self.read_favourite_show_ids()
         self.build_all_shows_menu(favids=favourite_show_ids)
     
-
     def build_newest_favourite_shows_menu(self):
         # TODO: This is only a first sketch of the method.
         log('build_newest_favourite_shows_menu')
@@ -647,6 +647,7 @@ class SRFPlayTV:
             log('next_hash: %s' % next_page_hash)
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
+            next_item.setArt({'thumb': ICON})
             url = self.build_url(mode=20, name=show_id, hash=next_page_hash)
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, next_item, isFolder=True)
 
@@ -762,7 +763,6 @@ class SRFPlayTV:
             url = self.build_url(mode=50, name=vid)
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=is_folder)
 
-    
     def getAuthString(self, url):
         #obtain the auth url
         sUrl=urlparse.urlparse(url).path.split('/')
@@ -788,7 +788,6 @@ class SRFPlayTV:
             url += ('?' if '?' not in url else '&') + auth_params
         return url
 
-    
     def play_video(self, video_id):
         """
         Gets the video stream information of a video and starts to play it.
@@ -858,7 +857,6 @@ class SRFPlayTV:
         play_item = xbmcgui.ListItem(video_id, path=auth_url)
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, play_item)
 
-    
 
 params=getParams() # TODO: function name (PEP8)
 try: url=urllib.unquote_plus(params["url"])
