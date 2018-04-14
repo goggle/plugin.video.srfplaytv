@@ -66,7 +66,6 @@ CONTENT_TYPE = 'files'
 DEBUG     = REAL_SETTINGS.getSetting('Enable_Debugging') == 'true'
 NUMBER_OF_EPISODES = 10
 
-
 FAVOURITE_SHOWS_FILENAME = 'favourite_shows.json'
 TODAY = LANGUAGE(30058)
 YESTERDAY = LANGUAGE(30059)
@@ -298,60 +297,6 @@ def _parse_date_time(input_string):
         except (ValueError, TypeError):
             return dt
     return None    
-
-def convert_date_string(date_string):
-    # OBSOLET
-    # FIXME: calculate the correct date.
-    # TODO: We need to get the time zone information to calculate the correct date and time...
-    # TODO: Make this undependant for case sensitivity. 
-    weekdays = ('Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'gestern', 'heute', 'morgen', u'übermorgen')
-    full_date_regex = r'(?P<day>\d{2})\.(?P<month>\d{2})\.(?P<year>\d{4})\s*,\s*(?P<hour>\d{2}):(?P<minute>\d{2})'
-    recent_date_regex = r'(?P<weekday>[a-zA-z]+)\s*,\s*(?P<hour>\d{2}):(?P<minute>\d{2})'
-    full_date_match = re.match(full_date_regex, date_string)
-    recent_date_match = re.match(recent_date_regex, date_string)
-    if full_date_match:
-        try:
-            year = int(full_date_match.group('year'))
-            month = int(full_date_match.group('month'))
-            day = int(full_date_match.group('day'))
-            hour = int(full_date_match.group('hour'))
-            minute = int(full_date_match.group('minute'))
-            dt = datetime.datetime(year, month, day, hour, minute)
-        except ValueError:
-            log('Could not convert date string: %s' % date_string)
-            return ''
-    elif recent_date_match:
-        today = datetime.date.today() # This depends on correct date settings in Kodi...
-        wdl = [x for x in weekdays if date_string.startswith(x)]
-        if not wdl:
-            log('No weekday match found for date string: %s' % date_string)
-            return ''
-        index = weekdays.index(wdl[0])
-        if index == 10: # day after tomorrow
-            td = datetime.timedelta(2)
-        elif index == 9: # tomorrow
-            td = datetime.timedelta(1)
-        elif index == 8: # today
-            td = datetime.timedelta(0)
-        elif index == 7: # yesterday
-            td = datetime.timedelta(-1)
-        else: # Sunday, Monday, ..., Saturday
-            # FIXME: This is probly wrong
-            days_off_pos = (today.weekday() - index) % 7
-            td = datetime.timedelta(-days_off_pos)
-        try:
-            hour = int(recent_date_match.group('hour'))
-            minute = int(recent_date_match.group('minute'))
-            time = datetime.time(hour, minute)
-        except ValueError:
-            log('Could not parse time for date string: %s' % date_string)
-            return ''
-        dt = datetime.datetime.combine(today, time) + td
-    else:
-        log('No match found for date string: %s' % date_string)
-        return ''
-    
-    return dt.strftime('%Y-%m-%d %H:%M:%S')
 
 class SRFPlayTV:
     def __init__(self):
@@ -639,7 +584,6 @@ class SRFPlayTV:
             vid = id_list[page*NUMBER_OF_EPISODES]
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
-            next_item.setArt({'thumb': ICON})
             name = topic_id if topic_id else ''
             u = self.build_url(mode=mode, name=name, page=page+1)
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=next_item, isFolder=True)
@@ -654,7 +598,7 @@ class SRFPlayTV:
         favourite_show_ids = self.read_favourite_show_ids()
         self.build_all_shows_menu(favids=favourite_show_ids)
     
-    def build_newest_favourite_shows_menu(self):
+    def build_newest_favourite_shows_menu(self, page=1):
         # TODO: This is only a first sketch of the method.
         log('build_newest_favourite_shows_menu')
         number_of_days = 30
@@ -663,8 +607,10 @@ class SRFPlayTV:
         now = datetime.datetime.now()
         current_month_date = datetime.date.today().strftime('%m-%Y') # TODO: This depends on the local time settings        
         list_of_episodes_dict = []
+        banners = {}
         for sid in show_ids:
-            json_url = '%s/play/tv/show/%s/latestEpisodes?numberOfEpisodes=%d&tillMonth=%s' % (HOST_URL, sid, NUMBER_OF_EPISODES, current_month_date)
+            json_url = '%s/play/tv/show/%s/latestEpisodes?numberOfEpisodes=%d&tillMonth=%s' % (HOST_URL, 
+                sid, number_of_days, current_month_date)
             response = json.loads(self.open_url(json_url))
             try:
                 banner_image = str_or_none(response['show']['bannerImageUrl'])
@@ -673,17 +619,29 @@ class SRFPlayTV:
             
             episode_list = response.get('episodes', [])
             for episode in episode_list:
-                episode['aired'] = convert_date_string(str_or_none(episode.get('date')))
-                if episode['aired']:
-                    # BUG: 
-                    # dat = datetime.datetime.strptime(episode['aired'], '%Y-%m-%d %H:%M:%S')
-                    # TypeError: attribute of type 'NoneType' is not callable
-                    dat = datetime.datetime.strptime(episode['aired'], '%Y-%m-%d %H:%M:%S')
-                    if dat >= now + datetime.timedelta(-number_of_days):
-                        list_of_episodes_dict.append(episode)
-        sorted_list_of_episodes_dict = sorted(list_of_episodes_dict, key=lambda k: k['aired'], reverse=True)
-        for episode in sorted_list_of_episodes_dict:
-            self.build_entry(episode)
+                dt = parse_datetime(str_or_none(episode.get('date'), default=''))
+                if dt and dt >= now + datetime.timedelta(-number_of_days):
+                    list_of_episodes_dict.append(episode)
+                    banners.update({episode.get('id'): banner_image})
+        sorted_list_of_episodes_dict = sorted(list_of_episodes_dict, 
+            key=lambda k: parse_datetime(str_or_none(k.get('date'), default='')), 
+            reverse=True)
+        try:
+            page = int(page)
+        except TypeError:
+            page = 1
+        reduced_sorted_list_of_episodes_dict = sorted_list_of_episodes_dict[(page - 1) * 
+            NUMBER_OF_EPISODES : page * NUMBER_OF_EPISODES]
+        for episode in reduced_sorted_list_of_episodes_dict:
+            self.build_entry(episode, banner=banners.get(episode.get('id')))
+        try:
+            sorted_list_of_episodes_dict[page*NUMBER_OF_EPISODES]
+            next_item = xbmcgui.ListItem(label='>> Next')
+            next_item.setProperty('IsPlayable', 'false')
+            u = self.build_url(mode=12, page=page+1)
+            xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, next_item, isFolder=True)
+        except IndexError:
+            pass
     
     def build_all_shows_menu(self, favids=None):
         """
@@ -786,9 +744,11 @@ class SRFPlayTV:
         log('build_show_menu, show_id = %s, page_hash=%s' % (show_id, page_hash))
         current_month_date = datetime.date.today().strftime('%m-%Y') # TODO: This depends on the local time settings
         if not page_hash:
-            json_url = '%s/play/tv/show/%s/latestEpisodes?numberOfEpisodes=%d&tillMonth=%s' % (HOST_URL, show_id, NUMBER_OF_EPISODES, current_month_date)
+            json_url = '%s/play/tv/show/%s/latestEpisodes?numberOfEpisodes=%d&tillMonth=%s' % (HOST_URL, 
+                show_id, NUMBER_OF_EPISODES, current_month_date)
         else:
-            json_url = '%s/play/tv/show/%s/latestEpisodes?nextPageHash=%s&tillMonth=%s' % (HOST_URL, show_id, page_hash, current_month_date)
+            json_url = '%s/play/tv/show/%s/latestEpisodes?nextPageHash=%s&tillMonth=%s' % (HOST_URL, 
+                show_id, page_hash, current_month_date)
 
         json_response = json.loads(self.open_url(json_url))
 
@@ -820,7 +780,6 @@ class SRFPlayTV:
             log('next_hash: %s' % next_page_hash)
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
-            next_item.setArt({'thumb': ICON})
             url = self.build_url(mode=20, name=show_id, hash=next_page_hash)
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, next_item, isFolder=True)
 
@@ -869,10 +828,6 @@ class SRFPlayTV:
         
         json_segment_list = json_chapter.get('segmentList', [])
         if video_id == chapter_id:
-            # self.build_entry(json_chapter, banner)
-            # if include_segments:
-            #     for segment in json_segment_list:
-            #         self.build_entry(segment, banner)
             if include_segments:
                 self.build_entry(json_chapter, banner)
                 for segment in json_segment_list:
@@ -1057,7 +1012,7 @@ elif mode == 10:
 elif mode == 11:
     SRFPlayTV().build_favourite_shows_menu()
 elif mode == 12:
-    SRFPlayTV().build_newest_favourite_shows_menu()
+    SRFPlayTV().build_newest_favourite_shows_menu(page=page)
 elif mode == 13:
     SRFPlayTV().build_topics_overview_menu('Newest')
 elif mode == 14:
@@ -1089,7 +1044,6 @@ elif mode == 100:
 elif mode == 101:
     SRFPlayTV().remove_show_from_favourites(name)
 
-# TODO: Do not do this here...
 xbmcplugin.setContent(int(sys.argv[1]), CONTENT_TYPE)
 xbmcplugin.addSortMethod(int(sys.argv[1]) , xbmcplugin.SORT_METHOD_UNSORTED)
 xbmcplugin.addSortMethod(int(sys.argv[1]) , xbmcplugin.SORT_METHOD_NONE)
