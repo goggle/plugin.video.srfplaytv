@@ -65,7 +65,6 @@ TIMEOUT = 30
 CONTENT_TYPE = 'files'
 DEBUG     = REAL_SETTINGS.getSetting('Enable_Debugging') == 'true'
 NUMBER_OF_EPISODES = 10
-# MAIN_MENU_ITEMS = ['Newest shows', 'Recommodations', 'Topics', 'Shows by date', 'All shows']
 
 
 FAVOURITE_SHOWS_FILENAME = 'favourite_shows.json'
@@ -92,7 +91,13 @@ def get_params():
 
 
 def str_or_none(inp, default=None):
-    return default if inp is None else compat_str(inp)
+    # return default if inp is None else compat_str(inp)
+    if inp is None:
+        return default
+    try:
+        return unicode(inp, 'utf-8')
+    except TypeError:
+        return inp
 
 
 def float_or_none(val, scale=1, invscale=1, default=None):
@@ -132,7 +137,170 @@ def get_duration(duration_string):
     log('Cannot convert duration string: &s' % duration_string)
     return None
 
+def parse_datetime(input_string):
+    dt = _parse_weekday_time(input_string)
+    if dt:
+        return dt
+    dt = _parse_date_time(input_string)
+    if dt:
+        return dt
+    dt = _parse_date_time_tz(input_string)
+    return dt
+
+def _parse_date_time_tz(input_string):
+    """
+    Creates a datetime object from a string of the form
+    %Y-%m-%dT%H:%M:%S<tz>
+    where <tz> represents the timezone info and is of the form
+    (+|-)%H:%M.
+    A NoneType will be returned in the case where it was not possible 
+    to create a datetime object.
+
+    Keyword arguments:
+    input_string -- a string of the above form
+    """
+    dt_regex = r'''(?x)
+                    (?P<dt>
+                        \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}
+                    )
+                    (?P<tz>
+                        [-+]\d{2}:\d{2}
+                    )
+                '''
+    match = re.match(dt_regex, input_string)
+    if match:
+        dts = match.group('dt')
+        # We ignore timezone information for now
+        try:
+            # Strange behavior of strptime in Kodi?
+            # dt = datetime.datetime.strptime(dts, '%Y-%m-%dT%H:%M:%S') # results in a TypeError in some cases...
+            year = int(dts[0:4])
+            month = int(dts[5:7])
+            day = int(dts[8:10])
+            hour = int(dts[11:13])
+            minute = int(dts[14:16])
+            second = int(dts[17:19])
+            dt = datetime.datetime(year, month, day, hour, minute, second)
+            return dt
+        except ValueError:
+            return None
+    return None
+
+def _parse_weekday_time(input_string):
+    """
+    Creates a datetime object from a string of the form
+    <weekday>,? %H:%M(:S)?
+    where <weekday> is either a german name of a weekday ('Montag', 'Dienstag', ...) or 
+    'gestern', 'heute', 'morgen'.
+    If it is not possible to create a datetime object from the given input string, 
+    a NoneType will be returned.
+
+    Keyword arguments:
+    input_string -- a string of the above form
+    """
+    weekdays = (
+            'Montag',
+            'Dienstag',
+            'Mittwoch',
+            'Donnerstag',
+            'Freitag',
+            'Samstag',
+            'Sonntag',
+            'gestern',
+            'heute',
+            'morgen',
+        )
+    recent_date_regex = r'''(?x)
+                            (?P<weekday>[a-zA-z]+)
+                            \s*,\s*
+                            (?P<hour>\d{2}):
+                            (?P<minute>\d{2})
+                            (:
+                                (?P<second>\d{2})
+                            )?
+                        '''
+    recent_date_match = re.match(recent_date_regex, input_string)
+    if recent_date_match:
+        today = datetime.date.today() # This depends on correct date settings in Kodi...
+        wdl = [x for x in weekdays if input_string.startswith(x)]
+        if not wdl:
+            log('No weekday match found for date string: %s' % input_string)
+            return None
+        index = weekdays.index(wdl[0])
+        if index == 9: # tomorrow
+            td = datetime.timedelta(1)
+        elif index == 8: # today
+            td = datetime.timedelta(0)
+        elif index == 7: # yesterday
+            td = datetime.timedelta(-1)
+        else: # Monday, Tuesday, ..., Sunday
+            days_off_pos = (today.weekday() - index) % 7
+            td = datetime.timedelta(-days_off_pos)
+        try:
+            hour = int(recent_date_match.group('hour'))
+            minute = int(recent_date_match.group('minute'))
+            time = datetime.time(hour, minute)
+        except ValueError:
+            log('Could not parse time for date string: %s' % input_string)
+            return None
+        try:
+            second = int(recent_date_match.group('second'))
+            time = datetime.time(hour, minute, second)
+        except (ValueError, TypeError):
+            pass
+        dt = datetime.datetime.combine(today, time) + td
+    else:
+        log('No match found for date string: %s' % input_string)
+        return None
+    return dt
+
+def _parse_date_time(input_string):
+    """
+    Creates a datetime object from a string of the following form:
+    %d.%m.%Y,? %H:%M(:%S)?
+
+    Note that the delimiter between the date and the time is optional, and also
+    the seconds in the time are optional.
+
+    If the given string cannot be transformed into a appropriate datetime object, 
+    a NoneType will be returned.
+
+    Keyword arguments:
+    input_string -- the date and time in the above form
+    """
+    full_date_regex = r'''(?x)
+                        (?P<day>\d{2})\.
+                        (?P<month>\d{2})\.
+                        (?P<year>\d{4})
+                        \s*,?\s*
+                        (?P<hour>\d{2}):
+                        (?P<minute>\d{2})
+                        (:
+                            (?P<second>\d{2})
+                        )?
+                    '''
+    full_date_match = re.match(full_date_regex, input_string)
+    if full_date_match:
+        try:
+            year = int(full_date_match.group('year'))
+            month = int(full_date_match.group('month'))
+            day = int(full_date_match.group('day'))
+            hour = int(full_date_match.group('hour'))
+            minute = int(full_date_match.group('minute'))
+            dt = datetime.datetime(year, month, day, hour, minute)
+        except ValueError:
+            log('Could not convert date string: %s' % input_string)
+            return None
+        try:
+            second = int(full_date_match.group('second'))
+            dt = datetime.datetime(year, month, day, hour, minute, second)
+            return dt
+        except (ValueError, TypeError):
+            return dt
+    return None    
+
 def convert_date_string(date_string):
+    # OBSOLET
     # FIXME: calculate the correct date.
     # TODO: We need to get the time zone information to calculate the correct date and time...
     # TODO: Make this undependant for case sensitivity. 
@@ -250,14 +418,15 @@ class SRFPlayTV:
         url -- the URL of the webpage
         """
         log('extract_id_list, url = %s' % url)
-        response = str_or_none(self.open_url(url), default='')
-        if not response:
+        response = self.open_url(url)
+        string_response = str_or_none(response, default='')
+        if not string_response:
             log('No video ids found on %s' % url)
-        response = response.replace('&quot;', '"')
+        readable_string_response = string_response.replace('&quot;', '"')
         # Note: other business units might have other ids, so this is only expected to
         # work for videos of SRF.
         id_regex = r'\"id\"\s*:\s*\"(?P<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\"'
-        id_list = [m.group('id') for m in re.finditer(id_regex, response)]
+        id_list = [m.group('id') for m in re.finditer(id_regex, readable_string_response)]
         return id_list
 
     def read_favourite_show_ids(self):
@@ -742,7 +911,9 @@ class SRFPlayTV:
         duration = int_or_none(json_entry.get('duration'), scale=1000)
         if not duration:
             duration = get_duration(json_entry.get('duration'))
-        date = None # FIXME: "date": "2018-03-21T21:50:48+01:00"
+        date_string = str_or_none(json_entry.get('date'), default='')
+        dto = parse_datetime(date_string)
+        kodi_date_string = dto.strftime('%Y-%m-%d') if dto else None
 
         list_item = xbmcgui.ListItem(label=title)
         list_item.setInfo(
@@ -751,7 +922,7 @@ class SRFPlayTV:
                 'title': title,
                 'plot': description,
                 'duration': duration,
-                'aired': date,
+                'aired': kodi_date_string,
                 # 'count': views,
             }
         )
