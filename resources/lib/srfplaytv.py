@@ -27,9 +27,7 @@ import datetime
 import json
 import socket
 import urllib2
-# from urllib import urlencode
 import urllib
-# from urlparse import parse_qsl
 import urlparse
 
 import xbmc
@@ -599,7 +597,6 @@ class SRFPlayTV:
         self.build_all_shows_menu(favids=favourite_show_ids)
     
     def build_newest_favourite_shows_menu(self, page=1):
-        # TODO: This is only a first sketch of the method.
         log('build_newest_favourite_shows_menu')
         number_of_days = 30
         show_ids = self.read_favourite_show_ids()
@@ -694,6 +691,7 @@ class SRFPlayTV:
             try:
                 image_url = str_or_none(jse['Image']['ImageRepresentations']['ImageRepresentation'][0]['url'])
                 thumbnail = image_url + '/scale/width/668' if image_url else ICON
+                banner = image_url.replace('WEBVISUAL', 'HEADER_SRF_PLAYER') if image_url else None
             except (KeyError, IndexError):
                 image_url = FANART
                 thumbnail = ICON
@@ -701,6 +699,7 @@ class SRFPlayTV:
             list_item.setArt({
                 'thumb': thumbnail,
                 'poster': image_url,
+                'banner': banner,
             })
             url = self.build_url(mode=20, name=show_id)
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, list_item, isFolder=True)
