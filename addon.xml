@@ -22,7 +22,15 @@
     <website>https://www.srf.ch/play/tv</website>
     <email>seileralex@gmail.com</email>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
-    <news></news>
+    <news>v0.8.0 (2018-04-17)
+    First release of the addon.
+     - Overview over all the shows.
+     - Manage list of favourite shows.
+     - List topics (newest and most clicked), trending and soon offline shows.
+     - List shows by date.
+     - Choose between SD and HD quality.
+     - Subtitle support.
+    </news>
     <assets>
         <icon>resources/icon.png</icon>
         <fanart>resources/fanart.png</fanart>
