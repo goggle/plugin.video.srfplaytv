@@ -128,7 +128,7 @@ def assemble_query_string(query_list):
 
 def get_duration(duration_string):
     """
-    Converts a duration string into an integer respresenting the 
+    Converts a duration string into an integer respresenting the
     total duration in seconds. There are three possible input string
     forms possible, either
     <hours>:<minutes>:<seconds>
@@ -1020,7 +1020,7 @@ class SRFPlayTV:
         Returns the authenticated URL from a given stream URL.
 
         Keyword arguments:
-        url -- a given stream URL 
+        url -- a given stream URL
         """
         sp = urlparse.urlparse(url).path.split('/')
         token = json.loads(
