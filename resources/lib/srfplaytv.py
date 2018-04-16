@@ -127,6 +127,20 @@ def assemble_query_string(query_list):
 
 
 def get_duration(duration_string):
+    """
+    Converts a duration string into an integer respresenting the 
+    total duration in seconds. There are three possible input string
+    forms possible, either
+    <hours>:<minutes>:<seconds>
+    or
+    <minutes>:<seconds>
+    or
+    <seconds>
+    In case of failure a NoneType will be returned.
+
+    Keyword arguments:
+    duration_string -- a string of the above Form.
+    """
     durrex = r'(((?P<hour>\d+):)?(?P<minute>\d+):)?(?P<second>\d+)'
     match = re.match(durrex, duration_string)
     if match:
@@ -139,6 +153,15 @@ def get_duration(duration_string):
 
 
 def parse_datetime(input_string):
+    """
+    Tries to create a datetime object from a given input string. There are
+    several different forms of input strings supported, for more details
+    have a look in the documentations of the called functions. In case
+    of failure, a NoneType will be returned.
+
+    Keyword arguments:
+    input_string -- a string to convert into a datetime object
+    """
     dt = _parse_weekday_time(input_string)
     if dt:
         return dt
@@ -337,7 +360,7 @@ class SRFPlayTV:
                 added = True
         return purl
 
-    def open_url(self, url, use_cache=False):  # TODO: change use_cache to true
+    def open_url(self, url, use_cache=True):
         """Open and read the content given by a URL.
 
         Keyword arguments:
@@ -648,6 +671,13 @@ class SRFPlayTV:
         self.build_all_shows_menu(favids=favourite_show_ids)
 
     def build_newest_favourite_shows_menu(self, page=1):
+        """
+        Builds a Kodi list of the newest favourite shows.
+
+        Keyword arguments:
+        page -- an integer indicating the current page on the
+                list (default: 1)
+        """
         log('build_newest_favourite_shows_menu')
         number_of_days = 30
         show_ids = self.read_favourite_show_ids()
@@ -700,6 +730,11 @@ class SRFPlayTV:
         """
         Builds a list of folders containing the names of all the current
         SRF shows.
+
+        Keyword arguments:
+        favids -- A list of show ids (strings) respresenting the favourite
+                  shows. If such a list is provided, only the folders for
+                  the shows on that list will be build. (default: None)
         """
         log('build_all_shows_menu')
         json_url = ('http://il.srgssr.ch/integrationlayer/1.0/ue/%s/tv/'
@@ -797,7 +832,7 @@ class SRFPlayTV:
                 int(sys.argv[1]), u, item, isFolder=False)
 
     def play_livestream(self, stream_url):
-        auth_url = self._get_tokenized_src(stream_url)
+        auth_url = self.get_auth_url(stream_url)
         play_item = xbmcgui.ListItem('Live', path=auth_url)
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, play_item)
 
@@ -980,21 +1015,13 @@ class SRFPlayTV:
         xbmcplugin.addDirectoryItem(
             int(sys.argv[1]), url, list_item, isFolder=is_folder)
 
-    def getAuthString(self, url):
-        sUrl = urlparse.urlparse(url).path.split('/')
-        if len(sUrl) < 3:
-            return False
-        auth = self.open_url(
-            'http://tp.srgssr.ch/akahd/token?acl={path}*'.format(
-                path=urllib.quote_plus('/{p1}/{p2}/'.format(
-                    p1=sUrl[1], p2=sUrl[2]))))
-        auth = json.loads(auth)
-        if 'token' in auth and 'authparams' in auth['token']:
-            return auth['token']['authparams']
-        else:
-            return False
+    def get_auth_url(self, url, segment_data=None):
+        """
+        Returns the authenticated URL from a given stream URL.
 
-    def _get_tokenized_src(self, url, segment_data=None):
+        Keyword arguments:
+        url -- a given stream URL 
+        """
         sp = urlparse.urlparse(url).path.split('/')
         token = json.loads(
             self.open_url(
@@ -1048,7 +1075,7 @@ class SRFPlayTV:
 
         stream_url = stream_urls['HD'] if (stream_urls['HD'] and PREFER_HD)\
             or not stream_urls['SD'] else stream_urls['SD']
-        auth_url = self._get_tokenized_src(stream_url)
+        auth_url = self.get_auth_url(stream_url)
 
         start_time = end_time = None
         if 'segmentUrn' in json_response:  # video_id is the ID of a segment
