@@ -40,9 +40,9 @@ import xbmcaddon
 from simplecache import SimpleCache
 
 try:
-    compat_str = unicode  # Python2
+    CompatStr = unicode  # Python2
 except NameError:
-    compat_str = str  # Python3
+    CompatStr = str  # Python3
 
 
 ADDON_ID = 'plugin.video.srfplaytv'
@@ -91,7 +91,7 @@ def get_params():
 
 
 def str_or_none(inp, default=None):
-    # return default if inp is None else compat_str(inp)
+    # return default if inp is None else CompatStr(inp)
     if inp is None:
         return default
     try:
@@ -162,14 +162,14 @@ def parse_datetime(input_string):
     Keyword arguments:
     input_string -- a string to convert into a datetime object
     """
-    dt = _parse_weekday_time(input_string)
-    if dt:
-        return dt
-    dt = _parse_date_time(input_string)
-    if dt:
-        return dt
-    dt = _parse_date_time_tz(input_string)
-    return dt
+    date_time = _parse_weekday_time(input_string)
+    if date_time:
+        return date_time
+    date_time = _parse_date_time(input_string)
+    if date_time:
+        return date_time
+    date_time = _parse_date_time_tz(input_string)
+    return date_time
 
 
 def _parse_date_time_tz(input_string):
@@ -206,8 +206,9 @@ def _parse_date_time_tz(input_string):
             hour = int(dts[11:13])
             minute = int(dts[14:16])
             second = int(dts[17:19])
-            dt = datetime.datetime(year, month, day, hour, minute, second)
-            return dt
+            date_time = datetime.datetime(
+                year, month, day, hour, minute, second)
+            return date_time
         except ValueError:
             return None
     return None
@@ -226,17 +227,17 @@ def _parse_weekday_time(input_string):
     input_string -- a string of the above form
     """
     weekdays = (
-            'Montag',
-            'Dienstag',
-            'Mittwoch',
-            'Donnerstag',
-            'Freitag',
-            'Samstag',
-            'Sonntag',
-            'gestern',
-            'heute',
-            'morgen',
-        )
+        'Montag',
+        'Dienstag',
+        'Mittwoch',
+        'Donnerstag',
+        'Freitag',
+        'Samstag',
+        'Sonntag',
+        'gestern',
+        'heute',
+        'morgen',
+    )
     recent_date_regex = r'''(?x)
                             (?P<weekday>[a-zA-z]+)
                             \s*,\s*
@@ -256,14 +257,14 @@ def _parse_weekday_time(input_string):
             return None
         index = weekdays.index(wdl[0])
         if index == 9:  # tomorrow
-            td = datetime.timedelta(1)
+            offset = datetime.timedelta(1)
         elif index == 8:  # today
-            td = datetime.timedelta(0)
+            offset = datetime.timedelta(0)
         elif index == 7:  # yesterday
-            td = datetime.timedelta(-1)
+            offset = datetime.timedelta(-1)
         else:  # Monday, Tuesday, ..., Sunday
             days_off_pos = (today.weekday() - index) % 7
-            td = datetime.timedelta(-days_off_pos)
+            offset = datetime.timedelta(-days_off_pos)
         try:
             hour = int(recent_date_match.group('hour'))
             minute = int(recent_date_match.group('minute'))
@@ -276,11 +277,11 @@ def _parse_weekday_time(input_string):
             time = datetime.time(hour, minute, second)
         except (ValueError, TypeError):
             pass
-        dt = datetime.datetime.combine(today, time) + td
+        date_time = datetime.datetime.combine(today, time) + offset
     else:
         log('No match found for date string: %s' % input_string)
         return None
-    return dt
+    return date_time
 
 
 def _parse_date_time(input_string):
@@ -316,16 +317,17 @@ def _parse_date_time(input_string):
             day = int(full_date_match.group('day'))
             hour = int(full_date_match.group('hour'))
             minute = int(full_date_match.group('minute'))
-            dt = datetime.datetime(year, month, day, hour, minute)
+            date_time = datetime.datetime(year, month, day, hour, minute)
         except ValueError:
             log('Could not convert date string: %s' % input_string)
             return None
         try:
             second = int(full_date_match.group('second'))
-            dt = datetime.datetime(year, month, day, hour, minute, second)
-            return dt
+            date_time = datetime.datetime(
+                year, month, day, hour, minute, second)
+            return date_time
         except (ValueError, TypeError):
-            return dt
+            return date_time
     return None
 
 
@@ -346,17 +348,17 @@ class SRFPlayTV:
                 the list of items
         """
         if mode:
-            mode = str(mode)
+            mode_str = str(mode)
         if page:
-            page = str(page)
+            page_str = str(page)
         added = False
-        qs = (url, mode, name, hash, page)
-        qn = ('url', 'mode', 'name', 'hash', 'page')
+        queries = (url, mode_str, name, hash, page_str)
+        query_names = ('url', 'mode', 'name', 'hash', 'page')
         purl = sys.argv[0]
-        for q, n in zip(qs, qn):
-            if q:
+        for query, name in zip(queries, query_names):
+            if query:
                 add = '?' if not added else '&'
-                purl += '%s%s=%s' % (add, n, urllib.quote_plus(q))
+                purl += '%s%s=%s' % (add, name, urllib.quote_plus(query))
                 added = True
         return purl
 
@@ -370,11 +372,11 @@ class SRFPlayTV:
         """
         log('open_url, url = ' + str(url))
         try:
-            cacheResponse = None
+            cache_response = None
             if use_cache:
-                cacheResponse = self.cache.get(
+                cache_response = self.cache.get(
                     ADDON_NAME + '.openURL, url = %s' % url)
-            if not cacheResponse:
+            if not cache_response:
                 request = urllib2.Request(url)
                 request.add_header(
                     'User-Agent', ADDON_NAME)
@@ -590,7 +592,7 @@ class SRFPlayTV:
             return
         topics_url = HOST_URL + '/play/tv/topicList'
         topics_json = json.loads(self.open_url(topics_url))
-        if type(topics_json) != list or len(topics_json) == 0:
+        if not isinstance(topics_json, list) or not topics_json:
             log('No topics found.')
             return
         for elem in topics_json:
@@ -699,9 +701,10 @@ class SRFPlayTV:
 
             episode_list = response.get('episodes', [])
             for episode in episode_list:
-                dt = parse_datetime(
+                date_time = parse_datetime(
                     str_or_none(episode.get('date'), default=''))
-                if dt and dt >= now + datetime.timedelta(-number_of_days):
+                if date_time and \
+                        date_time >= now + datetime.timedelta(-number_of_days):
                     list_of_episodes_dict.append(episode)
                     banners.update({episode.get('id'): banner_image})
         sorted_list_of_episodes_dict = sorted(
@@ -716,15 +719,13 @@ class SRFPlayTV:
                                            page * NUMBER_OF_EPISODES]
         for episode in reduced_sorted_list_of_episodes_dict:
             self.build_entry(episode, banner=banners.get(episode.get('id')))
-        try:
-            sorted_list_of_episodes_dict[page*NUMBER_OF_EPISODES]
+
+        if len(sorted_list_of_episodes_dict) > page * NUMBER_OF_EPISODES:
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
             u = self.build_url(mode=12, page=page+1)
             xbmcplugin.addDirectoryItem(
                 int(sys.argv[1]), u, next_item, isFolder=True)
-        except IndexError:
-            pass
 
     def build_all_shows_menu(self, favids=None):
         """
@@ -748,7 +749,7 @@ class SRFPlayTV:
         # TODO: use cache if possible
         favourite_show_ids = self.read_favourite_show_ids() if\
             favids is None else favids
-        if type(show_list) != list:
+        if not isinstance(show_list, list):
             log('build_all_shows_menu: No shows found.')
             return
         for jse in show_list:
@@ -779,12 +780,12 @@ class SRFPlayTV:
                 plugin_url = self.build_url(mode=101, name=show_id)
                 list_item.addContextMenuItems(
                     [('Remove from favourite shows',
-                        'XBMC.RunPlugin(%s)' % plugin_url)])
+                      'XBMC.RunPlugin(%s)' % plugin_url)])
             else:
                 plugin_url = self.build_url(mode=100, name=show_id)
                 list_item.addContextMenuItems(
                     [('Add to favourite shows',
-                        'XBMC.RunPlugin(%s)' % plugin_url)])
+                      'XBMC.RunPlugin(%s)' % plugin_url)])
 
             try:
                 image_url = str_or_none(
@@ -877,13 +878,13 @@ class SRFPlayTV:
                 next_page_hash = match.group('hash')
 
         json_episode_list = json_response.get('episodes', [])
-        if len(json_episode_list) == 0:
+        if not json_episode_list:
             log('No episodes for show %s found.' % show_id)
             return
 
         for episode_entry in json_episode_list:
             segments = episode_entry.get('segments', [])
-            enable_segments = True if SEGMENTS and len(segments) > 0 else False
+            enable_segments = True if SEGMENTS and segments else False
             self.build_entry(
                 episode_entry, banner=banner_image, is_folder=enable_segments)
 
@@ -953,7 +954,7 @@ class SRFPlayTV:
                 for segment in json_segment_list:
                     self.build_entry(segment, banner)
             else:
-                if segment_option and len(json_segment_list) > 0:
+                if segment_option and json_segment_list:
                     self.build_entry(json_chapter, banner, is_folder=True)
                 else:
                     self.build_entry(json_chapter, banner)
@@ -1048,14 +1049,14 @@ class SRFPlayTV:
                     'mediaComposition/video/%s.json') % (BU, video_id)
         json_response = json.loads(self.open_url(json_url))
 
-        chapter_list = json_response.get('chapterList')
-        if type(chapter_list) != list or len(chapter_list) == 0:
+        chapter_list = json_response.get('chapterList', [])
+        if not chapter_list:
             log('No stream URL found.')  # TODO: Error (Notification)
             return
 
         first_chapter = chapter_list[0]
-        resource_list = first_chapter.get('resourceList')
-        if type(resource_list) != list:
+        resource_list = first_chapter.get('resourceList', [])
+        if not resource_list:
             log('No stream URL found.')  # TODO: Error (Notification)
             return
 
@@ -1089,19 +1090,20 @@ class SRFPlayTV:
                     break
 
             if start_time and end_time:
-                pr = urlparse.urlparse(auth_url)
-                query_list = urlparse.parse_qsl(pr.query)
+                parsed_url = urlparse.urlparse(auth_url)
+                query_list = urlparse.parse_qsl(parsed_url.query)
                 updated_query_list = []
-                for qi in query_list:
-                    if qi[0] == 'start' or qi[0] == 'end':
+                for query in query_list:
+                    if query[0] == 'start' or query[0] == 'end':
                         continue
-                    updated_query_list.append(qi)
-                updated_query_list.append(('start', compat_str(start_time)))
-                updated_query_list.append(('end', compat_str(end_time)))
+                    updated_query_list.append(query)
+                updated_query_list.append(('start', CompatStr(start_time)))
+                updated_query_list.append(('end', CompatStr(end_time)))
                 new_query = assemble_query_string(updated_query_list)
                 surl_result = urlparse.ParseResult(
-                    pr.scheme, pr.netloc, pr.path, pr.params,
-                    new_query, pr.fragment)
+                    parsed_url.scheme, parsed_url.netloc,
+                    parsed_url.path, parsed_url.params,
+                    new_query, parsed_url.fragment)
                 auth_url = surl_result.geturl()
 
         play_item = xbmcgui.ListItem(video_id, path=auth_url)
