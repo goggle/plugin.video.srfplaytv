@@ -55,6 +55,7 @@ LANGUAGE = REAL_SETTINGS.getLocalizedString
 SEGMENTS = REAL_SETTINGS.getSetting('Enable_Show_Segments') == 'true'
 SEGMENTS_TOPICS = REAL_SETTINGS.getSetting('Enable_Settings_Topics') == 'true'
 PREFER_HD = REAL_SETTINGS.getSetting('Prefer_HD') == 'true'
+SUBTITLES = REAL_SETTINGS.getSetting('Extract_Subtitles') == 'true'
 
 PROFILE = xbmc.translatePath(
     REAL_SETTINGS.getAddonInfo('profile')).decode("utf-8")
@@ -1009,6 +1010,13 @@ class SRFPlayTV:
             'poster': image,
             'banner': banner,
         })
+        subs = json_entry.get('subtitleList', [])
+        if subs and SUBTITLES:
+            subtitle_list = [x.get('url') for x in subs if
+                             x.get('format') == 'VTT']
+            if not subtitle_list:
+                log('No WEBVTT subtitles found for video id %s.' % vid)
+            list_item.setSubtitles(subtitle_list)
         if is_folder:
             list_item.setProperty('IsPlayable', 'false')
             url = self.build_url(mode=21, name=vid)

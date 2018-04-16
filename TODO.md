@@ -10,3 +10,6 @@
  - [x] Do not throw an error if there are no videos for today's date.
  - [x] Implement video date extraction correctly (ie. the date converter and the extraction in the build methods).
  - [x] Show banner in show overview menus.
+ - [ ] Make addon.py PEP8 conform.
+ - [x] Subtitle support.
+ - [ ] Screenshots.
