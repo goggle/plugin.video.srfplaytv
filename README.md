@@ -14,10 +14,10 @@ Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/
  - [x] List shows that will soon be offline.
  - [x] List shows by date.
  - [x] Choose between SD and HD quality.
+ - [x] Subtitle support.
  - [ ] Livestreams that are exclusively broadcasted on SRF.ch (will be available in 1.0.0 release).
 
 ## Planned features
- - [ ] Subtitle support
  - [ ] Twitter integration: For shows with a SRF hashtag (e.g. #srfarena) get the tweets which were emitted during the show on the screen.
  - [ ] Download episodes for personal archiving purposes (probably through an additional Kodi script).
 
