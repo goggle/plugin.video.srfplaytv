@@ -348,11 +348,11 @@ class SRFPlayTV:
                 the list of items
         """
         if mode:
-            mode_str = str(mode)
+            mode = str(mode)
         if page:
-            page_str = str(page)
+            page = str(page)
         added = False
-        queries = (url, mode_str, name, hash, page_str)
+        queries = (url, mode, name, hash, page)
         query_names = ('url', 'mode', 'name', 'hash', 'page')
         purl = sys.argv[0]
         for query, name in zip(queries, query_names):
@@ -379,7 +379,9 @@ class SRFPlayTV:
             if not cache_response:
                 request = urllib2.Request(url)
                 request.add_header(
-                    'User-Agent', ADDON_NAME)
+                    'User-Agent',
+                    ('Mozilla/5.0 (X11; Linux x86_64; rv:59.0)'
+                     'Gecko/20100101 Firefox/59.0'))
                 response = urllib2.urlopen(request, timeout=TIMEOUT).read()
                 self.cache.set(
                     ADDON_NAME + '.openURL, url = %s' % url,
