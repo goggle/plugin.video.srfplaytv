@@ -354,9 +354,7 @@ class SRFPlayTV:
             if not cacheResponse:
                 request = urllib2.Request(url)
                 request.add_header(
-                    'User-Agent',
-                    'Mozilla/5.0 (X11; Linux x86_64; rv:59.0) \
-                    Gecko/20100101 Firefox/59.0')
+                    'User-Agent', ADDON_NAME)
                 response = urllib2.urlopen(request, timeout=TIMEOUT).read()
                 self.cache.set(
                     ADDON_NAME + '.openURL, url = %s' % url,
@@ -598,21 +596,21 @@ class SRFPlayTV:
             (name, topic_id, page))
         number_of_videos = 50
         if name == 'Newest':
-            url = '%s/play/tv/topic/%s/latest\
-                ?numberOfVideos=%s' % (HOST_URL, topic_id, number_of_videos)
+            url = '%s/play/tv/topic/%s/latest?numberOfVideos=%s' % (
+                HOST_URL, topic_id, number_of_videos)
             mode = 22
         elif name == 'Most clicked':
-            url = '%s/play/tv/topic/%s/mostClicked\
-                ?numberOfVideos=%s' % (HOST_URL, topic_id, number_of_videos)
+            url = '%s/play/tv/topic/%s/mostClicked?numberOfVideos=%s' % (
+                HOST_URL, topic_id, number_of_videos)
             mode = 23
         elif name == 'Soon offline':
-            url = '%s/play/tv/videos/soon-offline-videos\
-                ?numberOfVideos=%s' % (HOST_URL, number_of_videos)
+            url = '%s/play/tv/videos/soon-offline-videos?numberOfVideos=%s' % (
+                HOST_URL, number_of_videos)
             mode = 15
         elif name == 'Trending':
-            url = '%s/play/tv/videos/trending\
-                ?numberOfVideos=%s&onlyEpisodes=true\
-                &includeEditorialPicks=true' % (HOST_URL, number_of_videos)
+            url = ('%s/play/tv/videos/trending?numberOfVideos=%s'
+                   '&onlyEpisodes=true&includeEditorialPicks=true') % (
+                       HOST_URL, number_of_videos)
             mode = 16
         else:
             log('build_topics_menu: Unknown mode.')
@@ -660,10 +658,9 @@ class SRFPlayTV:
         list_of_episodes_dict = []
         banners = {}
         for sid in show_ids:
-            json_url = '%s/play/tv/show/%s/latestEpisodes\
-                ?numberOfEpisodes=%d&tillMonth=%s' % (HOST_URL, sid,
-                                                      number_of_days,
-                                                      current_month_date)
+            json_url = ('%s/play/tv/show/%s/latestEpisodes?numberOfEpisodes=%d'
+                        '&tillMonth=%s') % (HOST_URL, sid, number_of_days,
+                                            current_month_date)
             response = json.loads(self.open_url(json_url))
             try:
                 banner_image = str_or_none(response['show']['bannerImageUrl'])
@@ -705,8 +702,8 @@ class SRFPlayTV:
         SRF shows.
         """
         log('build_all_shows_menu')
-        json_url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/%s/tv\
-            /assetGroup/editorialPlayerAlphabetical.json' % BU
+        json_url = ('http://il.srgssr.ch/integrationlayer/1.0/ue/%s/tv/'
+                    'assetGroup/editorialPlayerAlphabetical.json') % BU
         json_response = json.loads(self.open_url(json_url))
         try:
             show_list = json_response['AssetGroups']['Show']
@@ -782,8 +779,8 @@ class SRFPlayTV:
 
         live_ids = get_live_ids()
         for lid in live_ids:
-            api_url = 'https://event.api.swisstxt.ch/v1\
-                /events/srf/byEventItemId/?eids=%s' % lid
+            api_url = ('https://event.api.swisstxt.ch/v1/events/'
+                       'srf/byEventItemId/?eids=%s') % lid
             try:
                 live_json = json.loads(self.open_url(api_url))
                 entry = live_json[0]
@@ -819,15 +816,14 @@ class SRFPlayTV:
         # TODO: This depends on the local time settings
         current_month_date = datetime.date.today().strftime('%m-%Y')
         if not page_hash:
-            json_url = '%s/play/tv/show/%s/latestEpisodes\
-                ?numberOfEpisodes=%d&tillMonth=%s' % (HOST_URL, show_id,
-                                                      NUMBER_OF_EPISODES,
-                                                      current_month_date)
+            json_url = ('%s/play/tv/show/%s/latestEpisodes?numberOfEpisodes=%d'
+                        '&tillMonth=%s') % (HOST_URL, show_id,
+                                            NUMBER_OF_EPISODES,
+                                            current_month_date)
         else:
-            json_url = '%s/play/tv/show/%s/latestEpisodes\
-                ?nextPageHash=%s&tillMonth=%s' % (HOST_URL, show_id,
-                                                  page_hash,
-                                                  current_month_date)
+            json_url = ('%s/play/tv/show/%s/latestEpisodes?nextPageHash=%s'
+                        '&tillMonth=%s') % (HOST_URL, show_id, page_hash,
+                                            current_month_date)
 
         json_response = json.loads(self.open_url(json_url))
 
@@ -881,8 +877,8 @@ class SRFPlayTV:
         """
         log('build_episode_menu, video_id = %s, include_segments = %s' %
             (video_id, include_segments))
-        json_url = 'https://il.srgssr.ch/integrationlayer/2.0\
-            /%s/mediaComposition/video/%s.json' % (BU, video_id)
+        json_url = ('https://il.srgssr.ch/integrationlayer/2.0/%s/'
+                    'mediaComposition/video/%s.json') % (BU, video_id)
         json_response = json.loads(self.open_url(json_url))
 
         chapter_urn = json_response.get('chapterUrn', '')
@@ -1021,8 +1017,8 @@ class SRFPlayTV:
         video_id -- the SRF video of the video to play
         """
         log('Playing video %s.' % video_id)
-        json_url = 'https://il.srgssr.ch/integrationlayer\
-            /2.0/%s/mediaComposition/video/%s.json' % (BU, video_id)
+        json_url = ('https://il.srgssr.ch/integrationlayer/2.0/%s/'
+                    'mediaComposition/video/%s.json') % (BU, video_id)
         json_response = json.loads(self.open_url(json_url))
 
         chapter_list = json_response.get('chapterList')
