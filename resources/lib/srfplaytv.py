@@ -62,7 +62,7 @@ PROFILE = xbmc.translatePath(
 BU = 'srf'
 HOST_URL = 'https://www.srf.ch'
 TIMEOUT = 30
-CONTENT_TYPE = 'files'
+CONTENT_TYPE = 'videos'
 DEBUG = REAL_SETTINGS.getSetting('Enable_Debugging') == 'true'
 NUMBER_OF_EPISODES = 10
 
