@@ -29,8 +29,8 @@ If you like this plugin, consider a donation:
 
 | Method | Link / Address | QR code |
 | --- | --- | --- |
-| Paypal | [Donation link](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZXAFRHTZGRARS) | ![Paypal link]() |
-| Bitcoin | 14d2as82kQ3mRoCSyrnHNoDi8PkFvxMMgP | ![Bitcoin address]() |
+| Paypal | [Donation link](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZXAFRHTZGRARS) | ![Paypal link](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/e62b52bb394eeee98c929895005bbc33e6028770/paypal.png) |
+| Bitcoin | 14d2as82kQ3mRoCSyrnHNoDi8PkFvxMMgP | ![Bitcoin address](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/e62b52bb394eeee98c929895005bbc33e6028770/bitcoin.png) |
 
 
 ## Screenshots
