@@ -25,7 +25,7 @@ How you can help improving this plugin:
  - Feel free to submit a pull request. Please style your code according to [PEP 8](https://www.python.org/dev/peps/pep-0008/).
  - If you can provide a French or Italian translation, let me know.
 
-If you like this plugin, consider a donation:
+If you like this plugin, consider to make a donation to the author:
 
 | Method | Link / Address | QR code |
 | --- | --- | --- |
