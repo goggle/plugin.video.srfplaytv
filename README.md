@@ -37,5 +37,3 @@ If you like this plugin, consider a donation:
 ![Main menu](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-01.png)
 ![A list menu](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-02.png)
 ![Episode information](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-03.png)
-![Show information](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-04.png)
-![Most recent episodes of a show](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-05.png)
