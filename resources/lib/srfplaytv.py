@@ -433,6 +433,7 @@ class SRFPlayTV:
         Reads the show ids from the file defined by the global
         variable FAVOURITE_SHOWS_FILENAMES and returns a list
         containing these ids.
+        An empty list will be returned in case of failure.
         """
         file_path = os.path.join(PROFILE, FAVOURITE_SHOWS_FILENAME)
         if not os.path.exists(file_path):
@@ -470,8 +471,13 @@ class SRFPlayTV:
         """
         log('add_show_to_favourites: new_show_id = %s' % new_show_id)
         show_ids = self.read_favourite_show_ids()
-        show_ids.append(new_show_id)
+        if new_show_id not in show_ids:
+            show_ids.append(new_show_id)
+        else:
+            log('Show %s is already in the list of favourite shows.'
+                % new_show_id)
         self.write_favourite_show_ids(show_ids)
+        xbmc.executebuiltin("Container.Refresh")
 
     def remove_show_from_favourites(self, old_show_id):
         """
@@ -492,6 +498,7 @@ class SRFPlayTV:
                 found in list of favourite shows.' % old_show_id)
             return
         self.write_favourite_show_ids(show_ids)
+        xbmc.executebuiltin("Container.Refresh")
 
     def build_main_menu(self):
         """
@@ -782,12 +789,12 @@ class SRFPlayTV:
             if show_id in favourite_show_ids:
                 plugin_url = self.build_url(mode=101, name=show_id)
                 list_item.addContextMenuItems(
-                    [('Remove from favourite shows',
+                    [(LANGUAGE(30067),
                       'XBMC.RunPlugin(%s)' % plugin_url)])
             else:
                 plugin_url = self.build_url(mode=100, name=show_id)
                 list_item.addContextMenuItems(
-                    [('Add to favourite shows',
+                    [(LANGUAGE(30068),
                       'XBMC.RunPlugin(%s)' % plugin_url)])
 
             try:

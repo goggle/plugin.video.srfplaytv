@@ -108,6 +108,14 @@ msgctxt "#30066"
 msgid "Sunday"
 msgstr ""
 
+msgctxt "#30067"
+msgid "Remove from favourite shows"
+msgstr ""
+
+msgctxt "#30068"
+msgid "Add to favourite shows"
+msgstr ""
+
 msgctxt "#30100"
 msgid "Failed to open URL."
 msgstr ""
