@@ -8,11 +8,8 @@ Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/
 ## Features
  - [x] Overview over all the shows.
  - [x] Manage a list of your favourite SRF shows and get a list of your recently aired favourite shows.
- - [x] List and play segments for shows (if available), so that you don't have to watch the whole episode if you are only interested in a specific section.
- - [x] List newest and most clicked shows by topic.
- - [x] List trending shows.
- - [x] List shows that will soon be offline.
- - [x] List shows by date.
+ - [x] List and play segments for shows (if available), so you don't have to watch the whole episode if you are only interested in a specific section.
+ - [x] Various lists: Newest and most clicked shows by topic (e.g. News, Documentaries, etc.), trending shows, soon offline shows, shows by date. 
  - [x] Choose between SD and HD quality.
  - [x] Subtitle support.
  - [ ] Livestreams that are exclusively broadcasted on SRF.ch (will be available in 1.0.0 release).
@@ -21,6 +18,7 @@ Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/
  - [ ] Twitter integration: For shows with a SRF hashtag (e.g. #srfarena) get the tweets which were emitted during the show on the screen.
  - [ ] Download episodes for personal archiving purposes (probably through an additional Kodi script).
 
+
 ## Support this plugin
  - If you have found a bug or have a feature request, use the issue tracker on the github page.
  - Feel free to submit a pull request. Please style your code according to PEP 8.
@@ -28,3 +26,8 @@ Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/
  - If you like this plugin, consider a donation:
    - Bitcoin: 14d2as82kQ3mRoCSyrnHNoDi8PkFvxMMgP
    - [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZXAFRHTZGRARS)
+
+## Screenshots
+![Main menu](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-01.png)
+![A list menu](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-02.png)
+![Episode information](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-03.png)
