@@ -12,7 +12,7 @@ Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/
  - [x] Various lists: Newest and most clicked shows by topic (e.g. News, Documentaries, etc.), trending shows, soon offline shows, shows by date. 
  - [x] Choose between SD and HD quality.
  - [x] Subtitle support.
- - [ ] Livestreams that are exclusively broadcasted on SRF.ch (will be available in 1.0.0 release).
+ - [ ] Livestreams that are exclusively broadcasted on SRF.ch (will be available in the 1.0.0 release).
 
 ## Planned features
  - [ ] Twitter integration: For shows with a SRF hashtag (e.g. #srfarena) get the tweets which were emitted during the show on the screen.
@@ -20,12 +20,18 @@ Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/
 
 
 ## Support this plugin
- - If you have found a bug or have a feature request, use the issue tracker on the github page.
- - Feel free to submit a pull request. Please style your code according to PEP 8.
+How you can help improving this plugin:
+ - For bugs and feature requests use the issue tracker on the github page.
+ - Feel free to submit a pull request. Please style your code according to [PEP 8](https://www.python.org/dev/peps/pep-0008/).
  - If you can provide a French or Italian translation, let me know.
- - If you like this plugin, consider a donation:
-   - Bitcoin: 14d2as82kQ3mRoCSyrnHNoDi8PkFvxMMgP
-   - [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZXAFRHTZGRARS)
+
+If you like this plugin, consider a donation:
+
+| Method | Link / Address | QR code |
+| --- | --- | --- |
+| Paypal | [Donation link](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZXAFRHTZGRARS) | ![Paypal link]() |
+| Bitcoin | 14d2as82kQ3mRoCSyrnHNoDi8PkFvxMMgP | ![Bitcoin address]() |
+
 
 ## Screenshots
 ![Main menu](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-01.png)
