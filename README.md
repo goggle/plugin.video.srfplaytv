@@ -1,6 +1,6 @@
 # SRF Play TV
 
-This is the development repository of the Kodi plugin **SRF Play TV** (plugin.video.srfplaytv).
+**SRF Play TV** (plugin.video.srfplaytv) is a Kodi plugin to access the video library of the Swiss Radio and Television (SRF).
 
 ## Goals of the plugin
 Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/tv) on your TV (or another device) via [Kodi](https://kodi.tv/). The plugin aims to be close to the original media library, so that the experience of consuming media through the browser or through Kodi should be similar.
