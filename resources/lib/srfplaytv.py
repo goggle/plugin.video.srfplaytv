@@ -682,7 +682,7 @@ class SRFPlayTV:
         favourite_show_ids = self.read_favourite_show_ids()
         self.build_all_shows_menu(favids=favourite_show_ids)
 
-    def build_newest_favourite_shows_menu(self, page=1):
+    def build_newest_favourite_menu(self, page=1):
         """
         Builds a Kodi list of the newest favourite shows.
 
@@ -690,7 +690,7 @@ class SRFPlayTV:
         page -- an integer indicating the current page on the
                 list (default: 1)
         """
-        log('build_newest_favourite_shows_menu')
+        log('build_newest_favourite_menu')
         number_of_days = 30
         show_ids = self.read_favourite_show_ids()
 
@@ -724,10 +724,9 @@ class SRFPlayTV:
             page = int(page)
         except TypeError:
             page = 1
-        reduced_sorted_list_of_episodes_dict\
-            = sorted_list_of_episodes_dict[(page - 1) * NUMBER_OF_EPISODES:
-                                           page * NUMBER_OF_EPISODES]
-        for episode in reduced_sorted_list_of_episodes_dict:
+        reduced_list = sorted_list_of_episodes_dict[
+            (page - 1) * NUMBER_OF_EPISODES:page * NUMBER_OF_EPISODES]
+        for episode in reduced_list:
             self.build_entry(episode, banner=banners.get(episode.get('id')))
 
         if len(sorted_list_of_episodes_dict) > page * NUMBER_OF_EPISODES:
@@ -1127,74 +1126,75 @@ class SRFPlayTV:
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, play_item)
 
 
-params = get_params()
-try:
-    url = urllib.unquote_plus(params["url"])
-except Exception:
-    url = None
-try:
-    name = urllib.unquote_plus(params["name"])
-except Exception:
-    name = None
-try:
-    mode = int(params["mode"])
-except Exception:
-    mode = None
-try:
-    page_hash = urllib.unquote_plus(params['hash'])
-except Exception:
-    page_hash = None
-try:
-    page = urllib.unquote_plus(params['page'])
-except Exception:
-    page = None
+def run():
+    params = get_params()
+    try:
+        url = urllib.unquote_plus(params["url"])
+    except Exception:
+        url = None
+    try:
+        name = urllib.unquote_plus(params["name"])
+    except Exception:
+        name = None
+    try:
+        mode = int(params["mode"])
+    except Exception:
+        mode = None
+    try:
+        page_hash = urllib.unquote_plus(params['hash'])
+    except Exception:
+        page_hash = None
+    try:
+        page = urllib.unquote_plus(params['page'])
+    except Exception:
+        page = None
 
-log("Mode: "+str(mode))
-log("URL : "+str(url))
-log("Name: "+str(name))
+    log("Mode: "+str(mode))
+    log("URL : "+str(url))
+    log("Name: "+str(name))
 
-if mode is None:
-    SRFPlayTV().build_main_menu()
-elif mode == 10:
-    SRFPlayTV().build_all_shows_menu()
-elif mode == 11:
-    SRFPlayTV().build_favourite_shows_menu()
-elif mode == 12:
-    SRFPlayTV().build_newest_favourite_shows_menu(page=page)
-elif mode == 13:
-    SRFPlayTV().build_topics_overview_menu('Newest')
-elif mode == 14:
-    SRFPlayTV().build_topics_overview_menu('Most clicked')
-elif mode == 15:
-    SRFPlayTV().build_topics_menu('Soon offline', page=page)
-elif mode == 16:
-    SRFPlayTV().build_topics_menu('Trending', page=page)
-elif mode == 17:
-    SRFPlayTV().build_dates_overview_menu()
-elif mode == 18:
-    SRFPlayTV().build_live_menu()
-elif mode == 20:
-    SRFPlayTV().build_show_menu(name, page_hash=page_hash)
-elif mode == 21:
-    SRFPlayTV().build_episode_menu(name)
-elif mode == 22:
-    SRFPlayTV().build_topics_menu('Newest', name, page=page)
-elif mode == 23:
-    SRFPlayTV().build_topics_menu('Most clicked', name, page=page)
-elif mode == 24:
-    SRFPlayTV().build_date_menu(name)
-elif mode == 50:
-    SRFPlayTV().play_video(name)
-elif mode == 51:
-    SRFPlayTV().play_livestream(name)
-elif mode == 100:
-    SRFPlayTV().add_show_to_favourites(name)
-elif mode == 101:
-    SRFPlayTV().remove_show_from_favourites(name)
+    if mode is None:
+        SRFPlayTV().build_main_menu()
+    elif mode == 10:
+        SRFPlayTV().build_all_shows_menu()
+    elif mode == 11:
+        SRFPlayTV().build_favourite_shows_menu()
+    elif mode == 12:
+        SRFPlayTV().build_newest_favourite_menu(page=page)
+    elif mode == 13:
+        SRFPlayTV().build_topics_overview_menu('Newest')
+    elif mode == 14:
+        SRFPlayTV().build_topics_overview_menu('Most clicked')
+    elif mode == 15:
+        SRFPlayTV().build_topics_menu('Soon offline', page=page)
+    elif mode == 16:
+        SRFPlayTV().build_topics_menu('Trending', page=page)
+    elif mode == 17:
+        SRFPlayTV().build_dates_overview_menu()
+    elif mode == 18:
+        SRFPlayTV().build_live_menu()
+    elif mode == 20:
+        SRFPlayTV().build_show_menu(name, page_hash=page_hash)
+    elif mode == 21:
+        SRFPlayTV().build_episode_menu(name)
+    elif mode == 22:
+        SRFPlayTV().build_topics_menu('Newest', name, page=page)
+    elif mode == 23:
+        SRFPlayTV().build_topics_menu('Most clicked', name, page=page)
+    elif mode == 24:
+        SRFPlayTV().build_date_menu(name)
+    elif mode == 50:
+        SRFPlayTV().play_video(name)
+    elif mode == 51:
+        SRFPlayTV().play_livestream(name)
+    elif mode == 100:
+        SRFPlayTV().add_show_to_favourites(name)
+    elif mode == 101:
+        SRFPlayTV().remove_show_from_favourites(name)
 
-xbmcplugin.setContent(int(sys.argv[1]), CONTENT_TYPE)
-xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_UNSORTED)
-xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_NONE)
-xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
-xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
-xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=True)
+    xbmcplugin.setContent(int(sys.argv[1]), CONTENT_TYPE)
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_UNSORTED)
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_NONE)
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
+    xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=True)
