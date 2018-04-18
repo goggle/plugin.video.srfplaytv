@@ -764,6 +764,8 @@ class SRFPlayTV:
         if not isinstance(show_list, list):
             log('build_all_shows_menu: No shows found.')
             return
+
+        list_items = []
         for jse in show_list:
             try:
                 title = str_or_none(jse['title'])
@@ -817,8 +819,9 @@ class SRFPlayTV:
                 'banner': banner,
             })
             url = self.build_url(mode=20, name=show_id)
-            xbmcplugin.addDirectoryItem(
-                int(sys.argv[1]), url, list_item, isFolder=True)
+            list_items.append((url, list_item, True))
+        xbmcplugin.addDirectoryItems(
+            int(sys.argv[1]), list_items, totalItems=len(list_items))
 
     def build_live_menu(self):
         def get_live_ids():
