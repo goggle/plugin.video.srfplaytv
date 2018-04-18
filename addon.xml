@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.srfplaytv" name="SRF Play TV" version="0.9.0" provider-name="Alexander Seiler">
+<addon id="plugin.video.srfplaytv" name="SRF Play TV" version="0.9.1" provider-name="Alexander Seiler">
   <requires>
     <import addon="xbmc.python" version="2.25.0"/>
     <import addon="script.module.simplecache" version="1.0.0"/>
@@ -22,7 +22,9 @@
     <website>https://www.srf.ch/play/tv</website>
     <email>seileralex@gmail.com</email>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
-    <news>
+    <news>v0.9.1 (2018-04-18)
+     - Make building of show overview menu faster.
+
     v0.9.0 (2018-04-18)
     First release of the addon.
      - Overview over all the shows.
