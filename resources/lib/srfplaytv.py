@@ -436,16 +436,17 @@ class SRFPlayTV:
         An empty list will be returned in case of failure.
         """
         file_path = os.path.join(PROFILE, FAVOURITE_SHOWS_FILENAME)
-        if not os.path.exists(file_path):
+        try:
+            with open(file_path, 'r') as f:
+                json_file = json.load(f)
+                try:
+                    return [entry['id'] for entry in json_file]
+                except KeyError:
+                    log('Unexpected file structure for %s.' %
+                        FAVOURITE_SHOWS_FILENAME)
+                    return []
+        except (IOError, TypeError):
             return []
-        with open(file_path, 'r') as f:
-            json_file = json.load(f)
-            try:
-                return [entry['id'] for entry in json_file]
-            except KeyError:
-                log('Unexpected file structure for %s.' %
-                    FAVOURITE_SHOWS_FILENAME)
-                return []
 
     def write_favourite_show_ids(self, show_ids):
         """
@@ -457,6 +458,8 @@ class SRFPlayTV:
         """
         show_ids_dict_list = [{'id': show_id} for show_id in show_ids]
         file_path = os.path.join(PROFILE, FAVOURITE_SHOWS_FILENAME)
+        if not os.path.exists(PROFILE):
+            os.makedirs(PROFILE)
         with open(file_path, 'w') as f:
             json.dump(show_ids_dict_list, f)
 
