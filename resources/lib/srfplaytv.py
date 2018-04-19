@@ -332,7 +332,7 @@ def _parse_date_time(input_string):
     return None
 
 
-class SRFPlayTV:
+class SRFPlayTV(object):
     def __init__(self):
         log('__init__')
         self.cache = SimpleCache()
@@ -758,15 +758,17 @@ class SRFPlayTV:
                 preselect_inds.append(ids.index(stored_id))
             except ValueError:
                 pass
+        ancient_ids = [x for x in stored_favids if x not in ids]
 
         dialog = xbmcgui.Dialog()
         selected_inds = dialog.multiselect(
             LANGUAGE(30069), names, preselect=preselect_inds)
 
-        # Note: This removes shows from the list of favourite shows, if they
-        # not available anymore on the platform. We should preserve those.
         if selected_inds is not None:
             new_favids = [ids[ind] for ind in selected_inds]
+            # Keep the old show ids:
+            new_favids += ancient_ids
+
             self.write_favourite_show_ids(new_favids)
 
     def build_all_shows_menu(self, favids=None):
