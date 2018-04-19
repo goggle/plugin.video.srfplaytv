@@ -35,6 +35,18 @@ msgctxt "#30004"
 msgid "Enable subtitles"
 msgstr "Aktiviere Untertitel"
 
+msgctxt "#30005"
+msgid "Manage favourite shows"
+msgstr "Bevorzugte Sendungen verwalten"
+
+msgctxt "#30010"
+msgid "General"
+msgstr "Allgemein"
+
+msgctxt "#30011"
+msgid "Favourites"
+msgstr "Favoriten"
+
 msgctxt "#30050"
 msgid "All shows"
 msgstr "Alle Sendungen"
@@ -65,7 +77,11 @@ msgstr "Nur noch kurze Zeit online"
 
 msgctxt "#30057"
 msgid "Shows by date"
-msgstr "Sendungen nach Daturm"
+msgstr "Sendungen nach Datum"
+
+msgctxt "#30071"
+msgid "Manage favourite shows"
+msgstr "Bevorzugte Sendungen verwalten"
 
 msgctxt "#30070"
 msgid "SRF.ch Live"
@@ -107,13 +123,9 @@ msgctxt "#30066"
 msgid "Sunday"
 msgstr "Sonntag"
 
-msgctxt "#30067"
-msgid "Remove from favourite shows"
-msgstr "Von bevorzugten Sendungen entfernen"
-
-msgctxt "#30068"
-msgid "Add to favourite shows"
-msgstr "Zu bevorzugten Sendungen hinzufügen"
+msgctxt "#30069"
+msgid "Wählen Sie Ihre bevorzugten Sendungen"
+msgstr ""
 
 msgctxt "#30100"
 msgid "Failed to open URL."

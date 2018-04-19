@@ -463,46 +463,6 @@ class SRFPlayTV:
         with open(file_path, 'w') as f:
             json.dump(show_ids_dict_list, f)
 
-    def add_show_to_favourites(self, new_show_id):
-        """
-        Adds a show to the list of favourite shows and writes these shows
-        to the file defined by the global variable FAVOURITE_SHOWS_FILENAME.
-
-        Keyword arguments:
-        new_show_id -- a string containing the id of the show to
-                       add to the favourites
-        """
-        log('add_show_to_favourites: new_show_id = %s' % new_show_id)
-        show_ids = self.read_favourite_show_ids()
-        if new_show_id not in show_ids:
-            show_ids.append(new_show_id)
-        else:
-            log('Show %s is already in the list of favourite shows.'
-                % new_show_id)
-        self.write_favourite_show_ids(show_ids)
-        xbmc.executebuiltin("Container.Refresh")
-
-    def remove_show_from_favourites(self, old_show_id):
-        """
-        Removes a show from the list of favourite shows and writes the
-        remaining show ids to the file defined by the global variable
-        FAVOURITE_SHOWS_FILENAME.
-
-        Keyword arguments:
-        old_show_id -- a string containing the id of the show to remove from
-                       the favourites
-        """
-        log('remove_show_from_favourites: old_show_id = %s' % old_show_id)
-        show_ids = self.read_favourite_show_ids()
-        try:
-            show_ids.remove(old_show_id)
-        except ValueError:
-            log('remove_show_from_favourites: Show id %s not \
-                found in list of favourite shows.' % old_show_id)
-            return
-        self.write_favourite_show_ids(show_ids)
-        xbmc.executebuiltin("Container.Refresh")
-
     def build_main_menu(self):
         """
         Builds the main menu of the plugin:
@@ -519,24 +479,57 @@ class SRFPlayTV:
         """
         log('build_main_menu')
         main_menu_list = [
-            {'name': LANGUAGE(30050), 'mode': 10},  # All shows
-            {'name': LANGUAGE(30051), 'mode': 11},  # Favourite shows
-            {'name': LANGUAGE(30052), 'mode': 12},  # Newest favourite shows
-            {'name': LANGUAGE(30053), 'mode': 16},  # Recommodations
-            {'name': LANGUAGE(30054), 'mode': 13},  # Newest shows
-            {'name': LANGUAGE(30055), 'mode': 14},  # Most clicked shows
-            {'name': LANGUAGE(30056), 'mode': 15},  # Soon offline
-            {'name': LANGUAGE(30057), 'mode': 17},  # Shows by date
+            {
+                # All shows
+                'name': LANGUAGE(30050),
+                'mode': 10,
+                'isFolder': True,
+            }, {
+                # Favourite shows
+                'name': LANGUAGE(30051),
+                'mode': 11,
+                'isFolder': True,
+            }, {
+                # Newest favourite shows
+                'name': LANGUAGE(30052),
+                'mode': 12,
+                'isFolder': True,
+            }, {
+                # Recommodations
+                'name': LANGUAGE(30053),
+                'mode': 16,
+                'isFolder': True,
+            }, {
+                # Newest shows
+                'name': LANGUAGE(30054),
+                'mode': 13,
+                'isFolder': True,
+            }, {
+                # Most clicked shows
+                'name': LANGUAGE(30055),
+                'mode': 14,
+                'isFolder': True,
+            }, {
+                # Soon offline
+                'name': LANGUAGE(30056),
+                'mode': 15,
+                'isFolder': True,
+            }, {
+                # Shows by date
+                'name': LANGUAGE(30057),
+                'mode': 17,
+                'isFolder': True,
+            },
             # {'name': LANGUAGE(30070), 'mode': 18},  # SRF.ch live
         ]
-        for mme in main_menu_list:
-            list_item = xbmcgui.ListItem(mme['name'])
+        for menu_item in main_menu_list:
+            list_item = xbmcgui.ListItem(menu_item['name'])
             list_item.setProperty('IsPlayable', 'false')
             list_item.setArt({'thumb': ICON})
-            u = self.build_url(mode=mme['mode'], name=mme['name'])
+            u = self.build_url(mode=menu_item['mode'], name=menu_item['name'])
             xbmcplugin.addDirectoryItem(
                 handle=int(sys.argv[1]), url=u,
-                listitem=list_item, isFolder=True)
+                listitem=list_item, isFolder=menu_item['isFolder'])
 
     def build_dates_overview_menu(self):
         """
@@ -739,6 +732,43 @@ class SRFPlayTV:
             xbmcplugin.addDirectoryItem(
                 int(sys.argv[1]), u, next_item, isFolder=True)
 
+    def read_all_available_shows(self):
+        json_url = ('http://il.srgssr.ch/integrationlayer/1.0/ue/%s/tv/'
+                    'assetGroup/editorialPlayerAlphabetical.json') % BU
+        json_response = json.loads(self.open_url(json_url))
+        try:
+            show_list = json_response['AssetGroups']['Show']
+        except KeyError:
+            log('read_all_available_shows: No shows found.')
+            return []
+        if not isinstance(show_list, list) or not show_list:
+            log('read_all_available_shows: No shows found.')
+            return []
+        return show_list
+
+    def manage_favourite_shows(self):
+        show_list = self.read_all_available_shows()
+        stored_favids = self.read_favourite_show_ids()
+        names = [x['title'] for x in show_list]
+        ids = [x['id'] for x in show_list]
+
+        preselect_inds = []
+        for stored_id in stored_favids:
+            try:
+                preselect_inds.append(ids.index(stored_id))
+            except ValueError:
+                pass
+
+        dialog = xbmcgui.Dialog()
+        selected_inds = dialog.multiselect(
+            LANGUAGE(30069), names, preselect=preselect_inds)
+
+        # Note: This removes shows from the list of favourite shows, if they
+        # not available anymore on the platform. We should preserve those.
+        if selected_inds is not None:
+            new_favids = [ids[ind] for ind in selected_inds]
+            self.write_favourite_show_ids(new_favids)
+
     def build_all_shows_menu(self, favids=None):
         """
         Builds a list of folders containing the names of all the current
@@ -750,20 +780,7 @@ class SRFPlayTV:
                   the shows on that list will be build. (default: None)
         """
         log('build_all_shows_menu')
-        json_url = ('http://il.srgssr.ch/integrationlayer/1.0/ue/%s/tv/'
-                    'assetGroup/editorialPlayerAlphabetical.json') % BU
-        json_response = json.loads(self.open_url(json_url))
-        try:
-            show_list = json_response['AssetGroups']['Show']
-        except KeyError:
-            log('build_all_shows_menu: No shows found.')
-            return
-        # TODO: use cache if possible
-        favourite_show_ids = self.read_favourite_show_ids() if\
-            favids is None else favids
-        if not isinstance(show_list, list):
-            log('build_all_shows_menu: No shows found.')
-            return
+        show_list = self.read_all_available_shows()
 
         list_items = []
         for jse in show_list:
@@ -788,18 +805,6 @@ class SRFPlayTV:
                     'plot': str_or_none(jse.get('lead')),
                 }
             )
-
-            # Add context menu to add / remove this show from the favourites:
-            if show_id in favourite_show_ids:
-                plugin_url = self.build_url(mode=101, name=show_id)
-                list_item.addContextMenuItems(
-                    [(LANGUAGE(30067),
-                      'XBMC.RunPlugin(%s)' % plugin_url)])
-            else:
-                plugin_url = self.build_url(mode=100, name=show_id)
-                list_item.addContextMenuItems(
-                    [(LANGUAGE(30068),
-                      'XBMC.RunPlugin(%s)' % plugin_url)])
 
             try:
                 image_url = str_or_none(
@@ -1179,6 +1184,8 @@ def run():
         SRFPlayTV().build_dates_overview_menu()
     elif mode == 18:
         SRFPlayTV().build_live_menu()
+    elif mode == 19:
+        SRFPlayTV().manage_favourite_shows()
     elif mode == 20:
         SRFPlayTV().build_show_menu(name, page_hash=page_hash)
     elif mode == 21:
@@ -1193,10 +1200,6 @@ def run():
         SRFPlayTV().play_video(name)
     elif mode == 51:
         SRFPlayTV().play_livestream(name)
-    elif mode == 100:
-        SRFPlayTV().add_show_to_favourites(name)
-    elif mode == 101:
-        SRFPlayTV().remove_show_from_favourites(name)
 
     xbmcplugin.setContent(int(sys.argv[1]), CONTENT_TYPE)
     xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_UNSORTED)
