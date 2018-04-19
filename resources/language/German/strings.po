@@ -29,7 +29,7 @@ msgstr "Bevorzuge HD-Qualität"
 
 msgctxt "#30003"
 msgid "Enable segments in topical playlists"
-msgstr "Aktiviere Sendungssegmente in themischen Playlisten."
+msgstr "Aktiviere Sendungssegmente in themischen Playlisten"
 
 msgctxt "#30004"
 msgid "Enable subtitles"
@@ -120,8 +120,8 @@ msgid "Sunday"
 msgstr "Sonntag"
 
 msgctxt "#30069"
-msgid "Wählen Sie Ihre bevorzugten Sendungen"
-msgstr ""
+msgid "Choose your favourite shows"
+msgstr "Wählen Sie Ihre bevorzugten Sendungen"
 
 msgctxt "#30100"
 msgid "Failed to open URL."
