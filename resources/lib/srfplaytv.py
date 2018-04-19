@@ -337,24 +337,25 @@ class SRFPlayTV(object):
         log('__init__')
         self.cache = SimpleCache()
 
-    def build_url(self, mode=None, name=None, url=None, hash=None, page=None):
+    @staticmethod
+    def build_url(mode=None, name=None, url=None, page_hash=None, page=None):
         """Build a URL for this Kodi plugin.
 
         Keyword arguments:
-        mode -- an integer representing the mode
-        name -- a string containing some information, e.g. a video id
-        url  -- a plugin URL, if another plugin/script needs to called
-        hash -- a string (used to get additional videos through the API)
-        page -- an integer used to indicate the current page in
-                the list of items
+        mode      -- an integer representing the mode
+        name      -- a string containing some information, e.g. a video id
+        url       -- a plugin URL, if another plugin/script needs to called
+        page_hash -- a string (used to get additional videos through the API)
+        page      -- an integer used to indicate the current page in
+                     the list of items
         """
         if mode:
             mode = str(mode)
         if page:
             page = str(page)
         added = False
-        queries = (url, mode, name, hash, page)
-        query_names = ('url', 'mode', 'name', 'hash', 'page')
+        queries = (url, mode, name, page_hash, page)
+        query_names = ('url', 'mode', 'name', 'page_hash', 'page')
         purl = sys.argv[0]
         for query, name in zip(queries, query_names):
             if query:
@@ -428,7 +429,8 @@ class SRFPlayTV(object):
             id_regex, readable_string_response)]
         return id_list
 
-    def read_favourite_show_ids(self):
+    @staticmethod
+    def read_favourite_show_ids():
         """
         Reads the show ids from the file defined by the global
         variable FAVOURITE_SHOWS_FILENAMES and returns a list
@@ -448,7 +450,8 @@ class SRFPlayTV(object):
         except (IOError, TypeError):
             return []
 
-    def write_favourite_show_ids(self, show_ids):
+    @staticmethod
+    def write_favourite_show_ids(show_ids):
         """
         Writes a list of show ids to the file defined by the global
         variable FAVOURITE_SHOWS_FILENAME.
@@ -847,6 +850,7 @@ class SRFPlayTV(object):
                 live_json = json.loads(self.open_url(api_url))
                 entry = live_json[0]
             except Exception:
+                log('build_live_menu: No entry found for live id %s.' % lid)
                 continue
             title = entry.get('title')
             stream_url = entry.get('hls')
@@ -919,7 +923,8 @@ class SRFPlayTV(object):
             log('next_hash: %s' % next_page_hash)
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
-            url = self.build_url(mode=20, name=show_id, hash=next_page_hash)
+            url = self.build_url(
+                mode=20, name=show_id, page_hash=next_page_hash)
             xbmcplugin.addDirectoryItem(
                 int(sys.argv[1]), url, next_item, isFolder=True)
 
@@ -1158,7 +1163,7 @@ def run():
     except Exception:
         mode = None
     try:
-        page_hash = urllib.unquote_plus(params['hash'])
+        page_hash = urllib.unquote_plus(params['page_hash'])
     except Exception:
         page_hash = None
     try:
