@@ -723,7 +723,11 @@ class SRFPlayTV(object):
         reduced_list = sorted_list_of_episodes_dict[
             (page - 1) * NUMBER_OF_EPISODES:page * NUMBER_OF_EPISODES]
         for episode in reduced_list:
-            self.build_entry(episode, banner=banners.get(episode.get('id')))
+            segments = episode.get('segments', [])
+            is_folder = True if segments and SEGMENTS else False
+            self.build_entry(
+                episode, banner=banners.get(episode.get('id')),
+                is_folder=is_folder)
 
         if len(sorted_list_of_episodes_dict) > page * NUMBER_OF_EPISODES:
             next_item = xbmcgui.ListItem(label='>> Next')
