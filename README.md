@@ -1,5 +1,7 @@
 # SRF Play TV
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1aae1595af1f4f75bd805bc03cc17215)](https://www.codacy.com/app/goggle/plugin.video.srfplaytv?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=goggle/plugin.video.srfplaytv&amp;utm_campaign=Badge_Grade)
+
 **SRF Play TV** (plugin.video.srfplaytv) is a Kodi plugin to access the video library of the Swiss Radio and Television (SRF).
 
 ## Goals of the plugin
