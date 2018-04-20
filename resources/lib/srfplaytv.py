@@ -552,7 +552,7 @@ class SRFPlayTV(object):
             return name
 
         current_date = datetime.date.today()
-        number_of_days = 10
+        number_of_days = 7
 
         for i in range(number_of_days):
             d = current_date + datetime.timedelta(-i)
@@ -563,6 +563,36 @@ class SRFPlayTV(object):
             xbmcplugin.addDirectoryItem(
                 handle=int(sys.argv[1]), url=u,
                 listitem=list_item, isFolder=True)
+
+        choose_item = xbmcgui.ListItem(label=LANGUAGE(30071))
+        choose_item.setArt({'thumb': ICON})
+        u = self.build_url(mode=25)
+        xbmcplugin.addDirectoryItem(
+            handle=int(sys.argv[1]), url=u,
+            listitem=choose_item, isFolder=True)
+
+    def pick_date(self):
+        """
+        Opens a date choosing dialog and lets the user input a date.
+        Redirects to the date menu of the chosen date.
+        In case of failure or abortion redirects to the date
+        overview menu.
+        """
+        date_picker = xbmcgui.Dialog().numeric(1, LANGUAGE(30071), None)
+        if date_picker is not None:
+            date_elems = date_picker.split('/')
+            try:
+                day = int(date_elems[0])
+                month = int(date_elems[1])
+                year = int(date_elems[2])
+                chosen_date = datetime.date(year, month, day)
+                name = chosen_date.strftime('%d-%m-%Y')
+                self.build_date_menu(name)
+            except (ValueError, IndexError):
+                log('pick_date: Invalid date chosen.')
+                self.build_dates_overview_menu()
+        else:
+            self.build_dates_overview_menu()
 
     def build_date_menu(self, date_string):
         """
@@ -1209,6 +1239,8 @@ def run():
         SRFPlayTV().build_topics_menu('Most clicked', name, page=page)
     elif mode == 24:
         SRFPlayTV().build_date_menu(name)
+    elif mode == 25:
+        SRFPlayTV().pick_date()
     elif mode == 50:
         SRFPlayTV().play_video(name)
     elif mode == 51:

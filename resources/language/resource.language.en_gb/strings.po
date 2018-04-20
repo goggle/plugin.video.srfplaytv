@@ -123,6 +123,10 @@ msgctxt "#30069"
 msgid "Choose your favourite shows"
 msgstr ""
 
+msgctxt "#30071"
+msgid "Choose date"
+msgstr ""
+
 msgctxt "#30100"
 msgid "Failed to open URL."
 msgstr ""
