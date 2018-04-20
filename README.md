@@ -20,6 +20,11 @@ Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/
  - [ ] Twitter integration: For shows with a SRF hashtag (e.g. #srfarena) get the tweets which were emitted during the show on the screen.
  - [ ] Download episodes for personal archiving purposes (probably through an additional Kodi script).
 
+## Installation
+
+ - The plugin is available in the official "Kodi Add-on repository". This is the recommended way to get the plugin.
+ - It is also available in "Goggle Addon Repository", which can be found [here](https://github.com/goggle/repository.goggle.addons).
+ - Furthermore, you can download the newest release as a zip file from the [release section](https://github.com/goggle/plugin.video.srfplaytv/releases) on github and manually install the plugin from the zip file. Keep in mind that you won't get any automatic updates if you choose this method.
 
 ## Support this plugin
 How you can help improving this plugin:
