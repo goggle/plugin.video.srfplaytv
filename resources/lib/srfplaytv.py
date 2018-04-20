@@ -933,6 +933,8 @@ class SRFPlayTV(object):
         """
         Builds a list entry for a episode by a given video id.
         The segment entries for that episode can be included too.
+        The video id can be an id of a segment. In this case an
+        entry for the segment will be created.
 
         Keyword arguments:
         video_id         -- the SRF id of the video
