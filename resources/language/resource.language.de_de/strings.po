@@ -60,7 +60,7 @@ msgid "Newest favourite shows"
 msgstr "Neuste bevorzugte Sendungen"
 
 msgctxt "#30053"
-msgid "Recommodations"
+msgid "Recommendations"
 msgstr "Empfehlungen"
 
 msgctxt "#30054"
