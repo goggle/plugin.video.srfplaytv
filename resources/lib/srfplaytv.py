@@ -1124,20 +1124,20 @@ class SRFPlayTV(object):
         Keyword arguments:
         video_id -- the SRF video of the video to play
         """
-        log('Playing video %s.' % video_id)
+        log('play_video, video_id = %s' % video_id)
         json_url = ('https://il.srgssr.ch/integrationlayer/2.0/%s/'
                     'mediaComposition/video/%s.json') % (BU, video_id)
         json_response = json.loads(self.open_url(json_url))
 
         chapter_list = json_response.get('chapterList', [])
         if not chapter_list:
-            log('No stream URL found.')  # TODO: Error (Notification)
+            log('play_video: no stream URL found.')
             return
 
         first_chapter = chapter_list[0]
         resource_list = first_chapter.get('resourceList', [])
         if not resource_list:
-            log('No stream URL found.')  # TODO: Error (Notification)
+            log('play_video: no stream URL found.')
             return
 
         stream_urls = {
@@ -1151,7 +1151,7 @@ class SRFPlayTV(object):
                         stream_urls[key] = resource.get('url')
 
         if not stream_urls['SD'] and not stream_urls['HD']:
-            log('No stream URL found.')  # TODO: Error (Notification)
+            log('play_video: no stream URL found.')
             return
 
         stream_url = stream_urls['HD'] if (stream_urls['HD'] and PREFER_HD)\
