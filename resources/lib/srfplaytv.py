@@ -96,7 +96,7 @@ def str_or_none(inp, default=None):
     if inp is None:
         return default
     try:
-        return unicode(inp, 'utf-8')
+        return CompatStr(inp, 'utf-8')
     except TypeError:
         return inp
 
@@ -478,7 +478,7 @@ class SRFPlayTV(object):
         Most clicked shows (by topic)
         Soon offline
         Shows by date
-        (SRF.ch live)
+        SRF.ch live
         """
         log('build_main_menu')
         main_menu_list = [
@@ -522,8 +522,12 @@ class SRFPlayTV(object):
                 'name': LANGUAGE(30057),
                 'mode': 17,
                 'isFolder': True,
-            },
-            # {'name': LANGUAGE(30070), 'mode': 18},  # SRF.ch live
+            }, {
+                # SRF.ch live
+                'name': LANGUAGE(30070),
+                'mode': 18,
+                'isFolder': True,
+            }
         ]
         for menu_item in main_menu_list:
             list_item = xbmcgui.ListItem(menu_item['name'])
@@ -869,8 +873,16 @@ class SRFPlayTV(object):
 
     def build_live_menu(self):
         def get_live_ids():
-            # TODO: implement this
-            return ['386514', '386460']
+            url = 'https://www.%s.ch' % BU
+            webpage = self.open_url(url, use_cache=False)
+            id_regex = r'data-sport-id=\"(?P<live_id>\d+)\"'
+            live_ids = []
+            try:
+                for m in re.finditer(id_regex, webpage):
+                    live_ids.append(m.group('live_id'))
+            except StopIteration:
+                pass
+            return live_ids
 
         live_ids = get_live_ids()
         for lid in live_ids:
@@ -1146,6 +1158,7 @@ class SRFPlayTV(object):
 
         stream_url = stream_urls['HD'] if (stream_urls['HD'] and PREFER_HD)\
             or not stream_urls['SD'] else stream_urls['SD']
+        log('play_video, stream_url = %s' % stream_url)
         auth_url = self.get_auth_url(stream_url)
 
         start_time = end_time = None
@@ -1175,7 +1188,7 @@ class SRFPlayTV(object):
                     parsed_url.path, parsed_url.params,
                     new_query, parsed_url.fragment)
                 auth_url = surl_result.geturl()
-
+        log('play_video, auth_url = %s' % auth_url)
         play_item = xbmcgui.ListItem(video_id, path=auth_url)
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, play_item)
 
