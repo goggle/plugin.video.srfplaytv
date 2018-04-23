@@ -170,6 +170,8 @@ def parse_datetime(input_string):
     if date_time:
         return date_time
     date_time = _parse_date_time_tz(input_string)
+    if not date_time:
+        log('parse_datetime: Could not parse input string %s', input_string)
     return date_time
 
 
@@ -254,7 +256,6 @@ def _parse_weekday_time(input_string):
         today = datetime.date.today()
         wdl = [x for x in weekdays if input_string.startswith(x)]
         if not wdl:
-            log('No weekday match found for date string: %s' % input_string)
             return None
         index = weekdays.index(wdl[0])
         if index == 9:  # tomorrow
@@ -271,7 +272,6 @@ def _parse_weekday_time(input_string):
             minute = int(recent_date_match.group('minute'))
             time = datetime.time(hour, minute)
         except ValueError:
-            log('Could not parse time for date string: %s' % input_string)
             return None
         try:
             second = int(recent_date_match.group('second'))
@@ -280,7 +280,6 @@ def _parse_weekday_time(input_string):
             pass
         date_time = datetime.datetime.combine(today, time) + offset
     else:
-        log('No match found for date string: %s' % input_string)
         return None
     return date_time
 
@@ -320,7 +319,6 @@ def _parse_date_time(input_string):
             minute = int(full_date_match.group('minute'))
             date_time = datetime.datetime(year, month, day, hour, minute)
         except ValueError:
-            log('Could not convert date string: %s' % input_string)
             return None
         try:
             second = int(full_date_match.group('second'))
