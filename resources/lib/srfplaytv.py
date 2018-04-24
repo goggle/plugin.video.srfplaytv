@@ -612,6 +612,12 @@ class SRFPlayTV(object):
         log('build_dates_overview_menu')
 
         def folder_name(dato):
+            """
+            Generates a Kodi folder name from an date object.
+
+            Keyword arguments:
+            dato -- a date object
+            """
             today = datetime.date.today()
             if dato == today:
                 name = TODAY
