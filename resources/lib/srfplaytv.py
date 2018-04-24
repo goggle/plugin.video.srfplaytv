@@ -45,8 +45,14 @@ except NameError:
     CompatStr = str  # Python3
 
 
-def get_boolean_setting(name):
-    return REAL_SETTINGS.getSetting(name) == 'true'
+def get_boolean_setting(label):
+    """
+    Retrieve the boolean value of a setting switch.
+
+    Keyword arguments:
+    label -- the settings label
+    """
+    return REAL_SETTINGS.getSetting(label) == 'true'
 
 
 ADDON_ID = 'plugin.video.srfplaytv'
@@ -107,7 +113,7 @@ def str_or_none(inp, default=None):
 
     Keyword arguments:
     inp     -- input
-    default -- the default value to return
+    default -- the default value to return (default: None)
     """
     if inp is None:
         return default
@@ -118,6 +124,16 @@ def str_or_none(inp, default=None):
 
 
 def float_or_none(val, scale=1, invscale=1, default=None):
+    """
+    Convert an input value to a float (if possible), otherwise
+    return a default value.
+
+    Keyword arguments:
+    val      -- input value
+    scale    -- divide the input by this value (default: 1)
+    invscale -- multiply the input by this value (default: 1)
+    default  -- the default return value (default: None)
+    """
     if val == '':
         val = None
     if val is None:
@@ -129,6 +145,16 @@ def float_or_none(val, scale=1, invscale=1, default=None):
 
 
 def int_or_none(val, scale=1, invscale=1, default=None):
+    """
+    Convert an input value to an integer (if possible), otherwise
+    return a default value.
+
+    Keyword arguments:
+    val      -- input value
+    scale    -- divide the input by this value (default: 1)
+    invscale -- multiply the input by this value (default: 1)
+    default  -- the default return value (default: None)
+    """
     if val == '':
         val = None
     if val is None:
@@ -140,6 +166,12 @@ def int_or_none(val, scale=1, invscale=1, default=None):
 
 
 def assemble_query_string(query_list):
+    """
+    Assembles a query for an URL and returns the assembled query string.
+
+    Keyword arguments:
+    query_list -- a list of queries
+    """
     return '&'.join(['{}={}'.format(k, v) for (k, v) in query_list])
 
 
