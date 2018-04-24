@@ -1166,7 +1166,7 @@ class SRFPlayTV(object):
         token = json.loads(
             self.open_url(
                 'http://tp.srgssr.ch/akahd/token?acl=/%s/%s/*' %
-                (sp[1], sp[2]))) or {}
+                (sp[1], sp[2]), use_cache=False)) or {}
         auth_params = token.get('token', {}).get('authparams')
         if segment_data:
             # timestep_string = self._get_timestep_token(segment_data)
