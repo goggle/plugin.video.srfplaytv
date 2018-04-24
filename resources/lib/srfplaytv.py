@@ -45,6 +45,10 @@ except NameError:
     CompatStr = str  # Python3
 
 
+def get_boolean_setting(name):
+    return REAL_SETTINGS.getSetting(name) == 'true'
+
+
 ADDON_ID = 'plugin.video.srfplaytv'
 REAL_SETTINGS = xbmcaddon.Addon(id=ADDON_ID)
 ADDON_NAME = REAL_SETTINGS.getAddonInfo('name')
@@ -52,10 +56,10 @@ ADDON_VERSION = REAL_SETTINGS.getAddonInfo('version')
 ICON = REAL_SETTINGS.getAddonInfo('icon')
 FANART = REAL_SETTINGS.getAddonInfo('fanart')
 LANGUAGE = REAL_SETTINGS.getLocalizedString
-SEGMENTS = REAL_SETTINGS.getSetting('Enable_Show_Segments') == 'true'
-SEGMENTS_TOPICS = REAL_SETTINGS.getSetting('Enable_Settings_Topics') == 'true'
-PREFER_HD = REAL_SETTINGS.getSetting('Prefer_HD') == 'true'
-SUBTITLES = REAL_SETTINGS.getSetting('Extract_Subtitles') == 'true'
+SEGMENTS = get_boolean_setting('Enable_Show_Segments')
+SEGMENTS_TOPICS = get_boolean_setting('Enable_Settings_Topics')
+PREFER_HD = get_boolean_setting('Prefer_HD')
+SUBTITLES = get_boolean_setting('Extract_Subtitles')
 
 PROFILE = xbmc.translatePath(
     REAL_SETTINGS.getAddonInfo('profile')).decode("utf-8")
@@ -64,7 +68,7 @@ BU = 'srf'
 HOST_URL = 'https://www.srf.ch'
 TIMEOUT = 30
 CONTENT_TYPE = 'videos'
-DEBUG = REAL_SETTINGS.getSetting('Enable_Debugging') == 'true'
+DEBUG = get_boolean_setting('Enable_Debugging')
 NUMBER_OF_EPISODES = 10
 
 FAVOURITE_SHOWS_FILENAME = 'favourite_shows.json'
@@ -77,9 +81,6 @@ socket.setdefaulttimeout(TIMEOUT)
 
 
 # General helper functions:
-def get_boolean_setting(name):
-    return REAL_SETTINGS.getSetting(name) == 'true'
-
 
 def log(msg, level=xbmc.LOGDEBUG):
     if DEBUG:
