@@ -47,6 +47,10 @@ msgctxt "#30011"
 msgid "Favourites"
 msgstr "Favoriten"
 
+msgctxt "#30012"
+msgid "Main menu"
+msgstr "Hauptmenü"
+
 msgctxt "#30050"
 msgid "All shows"
 msgstr "Alle Sendungen"
@@ -78,10 +82,6 @@ msgstr "Nur noch kurze Zeit online"
 msgctxt "#30057"
 msgid "Shows by date"
 msgstr "Sendungen nach Datum"
-
-msgctxt "#30070"
-msgid "SRF.ch Live"
-msgstr "SRF.ch Live"
 
 msgctxt "#30058"
 msgid "Today"
@@ -123,9 +123,17 @@ msgctxt "#30069"
 msgid "Choose your favourite shows"
 msgstr "Wählen Sie Ihre bevorzugten Sendungen"
 
+msgctxt "#30070"
+msgid "SRF.ch Live"
+msgstr "SRF.ch Live"
+
 msgctxt "#30071"
 msgid "Choose date"
 msgstr "Wähle Datum"
+
+msgctxt "#30072"
+msgid "Live TV"
+msgstr "Live TV"
 
 msgctxt "#30100"
 msgid "Failed to open URL."

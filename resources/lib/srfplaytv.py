@@ -73,12 +73,13 @@ YESTERDAY = LANGUAGE(30059)
 WEEKDAYS = (LANGUAGE(30060), LANGUAGE(30061), LANGUAGE(30062), LANGUAGE(30063),
             LANGUAGE(30064), LANGUAGE(30065), LANGUAGE(30066))
 
-
 socket.setdefaulttimeout(TIMEOUT)
 
 
-# General helper function:
-# Put these into a seperate script.
+# General helper functions:
+def get_boolean_setting(name):
+    return REAL_SETTINGS.getSetting(name) == 'true'
+
 
 def log(msg, level=xbmc.LOGDEBUG):
     if DEBUG:
@@ -142,6 +143,8 @@ def get_duration(duration_string):
     Keyword arguments:
     duration_string -- a string of the above Form.
     """
+    if not isinstance(duration_string, CompatStr):
+        return None
     durrex = r'(((?P<hour>\d+):)?(?P<minute>\d+):)?(?P<second>\d+)'
     match = re.match(durrex, duration_string)
     if match:
@@ -471,11 +474,12 @@ class SRFPlayTV(object):
         All shows
         Favourite shows
         Newest favourite shows
-        Recommodations
+        Recommendations
         Newest shows (by topic)
         Most clicked shows (by topic)
         Soon offline
         Shows by date
+        Live TV
         SRF.ch live
         """
         log('build_main_menu')
@@ -485,56 +489,73 @@ class SRFPlayTV(object):
                 'name': LANGUAGE(30050),
                 'mode': 10,
                 'isFolder': True,
+                'displayItem': get_boolean_setting('All_Shows')
             }, {
                 # Favourite shows
                 'name': LANGUAGE(30051),
                 'mode': 11,
                 'isFolder': True,
+                'displayItem': get_boolean_setting('Favourite_Shows')
             }, {
                 # Newest favourite shows
                 'name': LANGUAGE(30052),
                 'mode': 12,
                 'isFolder': True,
+                'displayItem': get_boolean_setting('Newest_Favourite_Shows')
             }, {
-                # Recommodations
+                # Recommendations
                 'name': LANGUAGE(30053),
                 'mode': 16,
                 'isFolder': True,
+                'displayItem': get_boolean_setting('Recommendations')
             }, {
                 # Newest shows
                 'name': LANGUAGE(30054),
                 'mode': 13,
                 'isFolder': True,
+                'displayItem': get_boolean_setting('Newest_Shows')
             }, {
                 # Most clicked shows
                 'name': LANGUAGE(30055),
                 'mode': 14,
                 'isFolder': True,
+                'displayItem': get_boolean_setting('Most_Clicked_Shows')
             }, {
                 # Soon offline
                 'name': LANGUAGE(30056),
                 'mode': 15,
                 'isFolder': True,
+                'displayItem': get_boolean_setting('Soon_Offline')
             }, {
                 # Shows by date
                 'name': LANGUAGE(30057),
                 'mode': 17,
                 'isFolder': True,
+                'displayItem': get_boolean_setting('Shows_By_Date')
+            }, {
+                # Live TV
+                'name': LANGUAGE(30072),
+                'mode': 26,
+                'isFolder': True,
+                'displayItem': get_boolean_setting('Live_TV')
             }, {
                 # SRF.ch live
                 'name': LANGUAGE(30070),
                 'mode': 18,
                 'isFolder': True,
+                'displayItem': get_boolean_setting('SRF_Live')
             }
         ]
         for menu_item in main_menu_list:
-            list_item = xbmcgui.ListItem(menu_item['name'])
-            list_item.setProperty('IsPlayable', 'false')
-            list_item.setArt({'thumb': ICON})
-            u = self.build_url(mode=menu_item['mode'], name=menu_item['name'])
-            xbmcplugin.addDirectoryItem(
-                handle=int(sys.argv[1]), url=u,
-                listitem=list_item, isFolder=menu_item['isFolder'])
+            if menu_item['displayItem']:
+                list_item = xbmcgui.ListItem(menu_item['name'])
+                list_item.setProperty('IsPlayable', 'false')
+                list_item.setArt({'thumb': ICON})
+                u = self.build_url(
+                    mode=menu_item['mode'], name=menu_item['name'])
+                xbmcplugin.addDirectoryItem(
+                    handle=int(sys.argv[1]), url=u,
+                    listitem=list_item, isFolder=menu_item['isFolder'])
 
     def build_dates_overview_menu(self):
         """
@@ -868,6 +889,44 @@ class SRFPlayTV(object):
             list_items.append((url, list_item, True))
         xbmcplugin.addDirectoryItems(
             int(sys.argv[1]), list_items, totalItems=len(list_items))
+
+    def build_tv_menu(self):
+        def extract_channel_id(webpage):
+            channel_id_regex = r'''(?x)
+                                   <iframe.+src\s*=\s*.+
+                                   (?P<channel_id>
+                                       [a-f0-9]{8}-
+                                       [a-f0-9]{4}-
+                                       [a-f0-9]{4}-
+                                       [a-f0-9]{4}-
+                                       [a-f0-9]{12}
+                                    )
+                                '''
+            match = re.search(channel_id_regex, webpage)
+            if match:
+                return match.group('channel_id')
+            return None
+
+        channels = ['srf-1', 'srf-2', 'srf-info']
+        for channel in channels:
+            url = 'https://www.srf.ch/livestream/player/%s' % channel
+            webpage = self.open_url(url, use_cache=False)
+            channel_id = extract_channel_id(webpage)
+            if not channel_id:
+                log('build_tv_menu: Could not extract channel id for %s.'
+                    % channel)
+                continue
+            urn = 'urn:srf:video:%s' % channel_id
+            json_url = ('https://il.srgssr.ch/integrationlayer/2.0/'
+                        'mediaComposition/byUrn/%s.json') % urn
+            info_json = json.loads(self.open_url(json_url, use_cache=False))
+            try:
+                json_entry = info_json['chapterList'][0]
+            except (KeyError, IndexError):
+                log('build_tv_menu: Unexpected json structure for channel %s'
+                    % channel)
+                continue
+            self.build_entry(json_entry)
 
     def build_live_menu(self):
         def get_live_ids():
@@ -1252,6 +1311,8 @@ def run():
         SRFPlayTV().build_date_menu(name)
     elif mode == 25:
         SRFPlayTV().pick_date()
+    elif mode == 26:
+        SRFPlayTV().build_tv_menu()
     elif mode == 50:
         SRFPlayTV().play_video(name)
     elif mode == 51:

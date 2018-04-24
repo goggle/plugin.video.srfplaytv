@@ -16,7 +16,8 @@ Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/
  - [x] Various lists: Newest and most clicked shows by topic (e.g. News, Documentaries, etc.), trending shows, soon offline shows, shows by date. 
  - [x] Choose between SD and HD quality.
  - [x] Subtitle support.
- - [x] Livestreams that are exclusively broadcasted on SRF.ch.
+ - [x] Livestreams that are exclusively broadcasted on SRF.ch (only available in Switzerland).
+ - [x] Live TV support: SRF 1, SRF 2 and SRF info (only available in Switzerland).
 
 ## Planned features
  - [ ] Twitter integration: For shows with a SRF hashtag (e.g. #srfarena) get the tweets which were emitted during the show on the screen.
