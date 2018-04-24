@@ -83,6 +83,13 @@ socket.setdefaulttimeout(TIMEOUT)
 # General helper functions:
 
 def log(msg, level=xbmc.LOGDEBUG):
+    """
+    Logs a message using Kodi's logging interface.
+
+    Keyword arguments:
+    msg   -- the message to log
+    level -- the logging level
+    """
     if DEBUG:
         if level == xbmc.LOGERROR:
             msg += ' ,' + traceback.format_exc()
@@ -94,7 +101,14 @@ def get_params():
 
 
 def str_or_none(inp, default=None):
-    # return default if inp is None else CompatStr(inp)
+    """
+    Convert an input to a string (if possible), otherwise
+    return a default value.
+
+    Keyword arguments:
+    inp     -- input
+    default -- the default value to return
+    """
     if inp is None:
         return default
     try:
@@ -359,10 +373,10 @@ class SRFPlayTV(object):
         queries = (url, mode, name, page_hash, page)
         query_names = ('url', 'mode', 'name', 'page_hash', 'page')
         purl = sys.argv[0]
-        for query, name in zip(queries, query_names):
+        for query, qname in zip(queries, query_names):
             if query:
                 add = '?' if not added else '&'
-                purl += '%s%s=%s' % (add, name, urllib.quote_plus(query))
+                purl += '%s%s=%s' % (add, qname, urllib.quote_plus(query))
                 added = True
         return purl
 
@@ -392,12 +406,12 @@ class SRFPlayTV(object):
                     response,
                     expiration=datetime.timedelta(hours=2))
             return self.cache.get(ADDON_NAME + '.openURL, url = %s' % url)
-        except urllib2.URLError as e:
-            log("openURL Failed! " + str(e), xbmc.LOGERROR)
-        except socket.timeout as e:
-            log("openURL Failed! " + str(e), xbmc.LOGERROR)
-        except Exception as e:
-            log("openURL Failed! " + str(e), xbmc.LOGERROR)
+        except urllib2.URLError as err:
+            log("openURL Failed! " + str(err), xbmc.LOGERROR)
+        except socket.timeout as err:
+            log("openURL Failed! " + str(err), xbmc.LOGERROR)
+        except Exception as err:
+            log("openURL Failed! " + str(err), xbmc.LOGERROR)
             xbmcgui.Dialog().notification(
                 ADDON_NAME, LANGUAGE(30100), ICON, 4000)
             return ''
@@ -552,10 +566,10 @@ class SRFPlayTV(object):
                 list_item = xbmcgui.ListItem(menu_item['name'])
                 list_item.setProperty('IsPlayable', 'false')
                 list_item.setArt({'thumb': ICON})
-                u = self.build_url(
+                purl = self.build_url(
                     mode=menu_item['mode'], name=menu_item['name'])
                 xbmcplugin.addDirectoryItem(
-                    handle=int(sys.argv[1]), url=u,
+                    handle=int(sys.argv[1]), url=purl,
                     listitem=list_item, isFolder=menu_item['isFolder'])
 
     def build_dates_overview_menu(self):
@@ -565,34 +579,35 @@ class SRFPlayTV(object):
         """
         log('build_dates_overview_menu')
 
-        def folder_name(d):
+        def folder_name(dato):
             today = datetime.date.today()
-            if d == today:
+            if dato == today:
                 name = TODAY
-            elif d == today + datetime.timedelta(-1):
+            elif dato == today + datetime.timedelta(-1):
                 name = YESTERDAY
             else:
-                name = WEEKDAYS[d.weekday()] + ', %s' % d.strftime('%d.%m.%Y')
+                name = '%s, %s' % (WEEKDAYS[dato.weekday()],
+                                   dato.strftime('%d.%m.%Y'))
             return name
 
         current_date = datetime.date.today()
         number_of_days = 7
 
         for i in range(number_of_days):
-            d = current_date + datetime.timedelta(-i)
-            list_item = xbmcgui.ListItem(label=folder_name(d))
+            dato = current_date + datetime.timedelta(-i)
+            list_item = xbmcgui.ListItem(label=folder_name(dato))
             list_item.setArt({'thumb': ICON})
-            name = d.strftime('%d-%m-%Y')
-            u = self.build_url(mode=24, name=name)
+            name = dato.strftime('%d-%m-%Y')
+            purl = self.build_url(mode=24, name=name)
             xbmcplugin.addDirectoryItem(
-                handle=int(sys.argv[1]), url=u,
+                handle=int(sys.argv[1]), url=purl,
                 listitem=list_item, isFolder=True)
 
         choose_item = xbmcgui.ListItem(label=LANGUAGE(30071))
         choose_item.setArt({'thumb': ICON})
-        u = self.build_url(mode=25)
+        purl = self.build_url(mode=25)
         xbmcplugin.addDirectoryItem(
-            handle=int(sys.argv[1]), url=u,
+            handle=int(sys.argv[1]), url=purl,
             listitem=choose_item, isFolder=True)
 
     def pick_date(self):
@@ -664,9 +679,9 @@ class SRFPlayTV(object):
             list_item.setArt({'thumb': ICON})
             name = elem.get('id')
             if name:
-                u = self.build_url(mode=mode, name=name)
+                purl = self.build_url(mode=mode, name=name)
                 xbmcplugin.addDirectoryItem(
-                    handle=int(sys.argv[1]), url=u,
+                    handle=int(sys.argv[1]), url=purl,
                     listitem=list_item, isFolder=True)
 
     def build_topics_menu(self, name, topic_id=None, page=1):
@@ -720,9 +735,9 @@ class SRFPlayTV(object):
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
             name = topic_id if topic_id else ''
-            u = self.build_url(mode=mode, name=name, page=page+1)
+            purl = self.build_url(mode=mode, name=name, page=page+1)
             xbmcplugin.addDirectoryItem(
-                handle=int(sys.argv[1]), url=u,
+                handle=int(sys.argv[1]), url=purl,
                 listitem=next_item, isFolder=True)
         except IndexError:
             return
@@ -789,11 +804,14 @@ class SRFPlayTV(object):
         if len(sorted_list_of_episodes_dict) > page * NUMBER_OF_EPISODES:
             next_item = xbmcgui.ListItem(label='>> Next')
             next_item.setProperty('IsPlayable', 'false')
-            u = self.build_url(mode=12, page=page+1)
+            purl = self.build_url(mode=12, page=page+1)
             xbmcplugin.addDirectoryItem(
-                int(sys.argv[1]), u, next_item, isFolder=True)
+                int(sys.argv[1]), purl, next_item, isFolder=True)
 
     def read_all_available_shows(self):
+        """
+        Downloads a list of all available SRF shows and returns this list.
+        """
         json_url = ('http://il.srgssr.ch/integrationlayer/1.0/ue/%s/tv/'
                     'assetGroup/editorialPlayerAlphabetical.json') % BU
         json_response = json.loads(self.open_url(json_url))
@@ -808,6 +826,10 @@ class SRFPlayTV(object):
         return show_list
 
     def manage_favourite_shows(self):
+        """
+        Opens a Kodi multiselect dialog to let the user choose
+        his/her personal favourite show list.
+        """
         show_list = self.read_all_available_shows()
         stored_favids = self.read_favourite_show_ids()
         names = [x['title'] for x in show_list]
@@ -892,7 +914,16 @@ class SRFPlayTV(object):
             int(sys.argv[1]), list_items, totalItems=len(list_items))
 
     def build_tv_menu(self):
+        """
+        Builds the overview over the SRF TV channels (SRF 1, SRF 2, SRF info).
+        """
         def extract_channel_id(webpage):
+            """
+            Extracts the TV channel id from the webpage of the channel.
+
+            Keyword arguments:
+            webpage -- the content of the webpage of a TV channel
+            """
             channel_id_regex = r'''(?x)
                                    <iframe.+src\s*=\s*.+
                                    (?P<channel_id>
@@ -930,14 +961,22 @@ class SRFPlayTV(object):
             self.build_entry(json_entry)
 
     def build_live_menu(self):
+        """
+        Builds the menu listing the currently available SRF.ch livestreams.
+        """
         def get_live_ids():
+            """
+            Downloads the webpage 'https://www.srf.ch' and scrapes it for
+            possible livestreams. If some live events were found, a list
+            of live ids will be returned, otherwise an empty list.
+            """
             url = 'https://www.%s.ch' % BU
             webpage = self.open_url(url, use_cache=False)
             id_regex = r'data-sport-id=\"(?P<live_id>\d+)\"'
             live_ids = []
             try:
-                for m in re.finditer(id_regex, webpage):
-                    live_ids.append(m.group('live_id'))
+                for match in re.finditer(id_regex, webpage):
+                    live_ids.append(match.group('live_id'))
             except StopIteration:
                 pass
             return live_ids
@@ -958,11 +997,17 @@ class SRFPlayTV(object):
             item = xbmcgui.ListItem(label=title)
             item.setProperty('IsPlayable', 'true')
             item.setArt({'thumb': image})
-            u = self.build_url(mode=51, name=stream_url)
+            purl = self.build_url(mode=51, name=stream_url)
             xbmcplugin.addDirectoryItem(
-                int(sys.argv[1]), u, item, isFolder=False)
+                int(sys.argv[1]), purl, item, isFolder=False)
 
     def play_livestream(self, stream_url):
+        """
+        Plays a livestream, given a unauthenticated stream url.
+
+        Keyword arguments:
+        stream_url -- the stream url
+        """
         auth_url = self.get_auth_url(stream_url)
         play_item = xbmcgui.ListItem('Live', path=auth_url)
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, play_item)
@@ -1163,11 +1208,11 @@ class SRFPlayTV(object):
         Keyword arguments:
         url -- a given stream URL
         """
-        sp = urlparse.urlparse(url).path.split('/')
+        spl = urlparse.urlparse(url).path.split('/')
         token = json.loads(
             self.open_url(
                 'http://tp.srgssr.ch/akahd/token?acl=/%s/%s/*' %
-                (sp[1], sp[2]), use_cache=False)) or {}
+                (spl[1], spl[2]), use_cache=False)) or {}
         auth_params = token.get('token', {}).get('authparams')
         if segment_data:
             # timestep_string = self._get_timestep_token(segment_data)
@@ -1252,6 +1297,9 @@ class SRFPlayTV(object):
 
 
 def run():
+    """
+    Run the plugin.
+    """
     params = get_params()
     try:
         url = urllib.unquote_plus(params["url"])
