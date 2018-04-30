@@ -1131,7 +1131,12 @@ class SRFPlayTV(object):
             (video_id, include_segments))
         json_url = ('https://il.srgssr.ch/integrationlayer/2.0/%s/'
                     'mediaComposition/video/%s.json') % (BU, video_id)
-        json_response = json.loads(self.open_url(json_url))
+        try:
+            json_response = json.loads(self.open_url(json_url))
+        except Exception:
+            log('build_episode_menu: Cannot open media json for %s.'
+                % video_id)
+            return
 
         chapter_urn = json_response.get('chapterUrn', '')
         segment_urn = json_response.get('segmentUrn', '')
