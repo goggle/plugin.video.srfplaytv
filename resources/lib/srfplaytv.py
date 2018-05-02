@@ -770,7 +770,7 @@ class SRFPlayTV(object):
 
         try:
             vid = id_list[page*NUMBER_OF_EPISODES]
-            next_item = xbmcgui.ListItem(label='>> Next')
+            next_item = xbmcgui.ListItem(label=LANGUAGE(30073))
             next_item.setProperty('IsPlayable', 'false')
             name = topic_id if topic_id else ''
             purl = self.build_url(mode=mode, name=name, page=page+1)
@@ -840,7 +840,7 @@ class SRFPlayTV(object):
                 is_folder=is_folder)
 
         if len(sorted_list_of_episodes_dict) > page * NUMBER_OF_EPISODES:
-            next_item = xbmcgui.ListItem(label='>> Next')
+            next_item = xbmcgui.ListItem(label=LANGUAGE(30073))
             next_item.setProperty('IsPlayable', 'false')
             purl = self.build_url(mode=12, page=page+1)
             xbmcplugin.addDirectoryItem(
@@ -1104,7 +1104,7 @@ class SRFPlayTV(object):
         if next_page_hash and page_hash != next_page_hash:
             log('page_hash: %s' % page_hash)
             log('next_hash: %s' % next_page_hash)
-            next_item = xbmcgui.ListItem(label='>> Next')
+            next_item = xbmcgui.ListItem(label=LANGUAGE(30073))
             next_item.setProperty('IsPlayable', 'false')
             url = self.build_url(
                 mode=20, name=show_id, page_hash=next_page_hash)
