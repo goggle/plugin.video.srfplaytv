@@ -22,6 +22,7 @@
     <email>seileralex@gmail.com</email>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
     <news>v1.0.1 (TODO)
+     - Only list srf.ch live events if livestream is available.
      - Ignore invalid video ids in episode menu.
      - Translate 'Next page' string.
     

@@ -1029,6 +1029,8 @@ class SRFPlayTV(object):
             except Exception:
                 log('build_live_menu: No entry found for live id %s.' % lid)
                 continue
+            if entry.get('streamType') == 'noStream':
+                continue
             title = entry.get('title')
             stream_url = entry.get('hls')
             image = entry.get('imageUrl')
