@@ -47,3 +47,6 @@ If you like this plugin, consider to make a donation to the author:
 ![Main menu](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-01.png)
 ![A list menu](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-02.png)
 ![Episode information](https://raw.githubusercontent.com/goggle/plugin.video.srfplaytv/master/resources/screenshot-03.png)
+
+## Thanks
+ - Thanks to @giovannipessiva for providing an Italian translation.

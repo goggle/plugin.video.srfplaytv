@@ -21,22 +21,20 @@
     <website>https://www.srf.ch/play/tv</website>
     <email>seileralex@gmail.com</email>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
-    <news>v1.1.0 (2018-07-01)
-     - Add support for Radio SRF 3 video livestreams.
+    <news>vX.Y.Z (yyyy-mm-dd)
+ - Add Italian translation.
+v1.1.0 (2018-07-01)
+ - Add support for Radio SRF 3 video livestreams.
 
-    v1.0.1 (2018-06-07)
-     - Only list srf.ch live events if livestream is available.
-     - Ignore invalid video ids in episode menu.
-     - Translate 'Next page' string.
-    
-    v1.0.0 (2018-04-24)
-     - Add support for SRF.ch livestreams.
-     - Add support for Live TV (SRF 1, SRF 2, SRF info).
-     - Choose folders to appear in the main menu.
-    
-    v0.9.3 (2018-04-22)
-     - Add date picker for choosing shows by date.
-    </news>
+v1.0.1 (2018-06-07)
+ - Only list srf.ch live events if livestream is available.
+ - Ignore invalid video ids in episode menu.
+ - Translate 'Next page' string.
+
+v1.0.0 (2018-04-24)
+ - Add support for SRF.ch livestreams.
+ - Add support for Live TV (SRF 1, SRF 2, SRF info).
+ - Choose folders to appear in the main menu.</news>
     <assets>
         <icon>resources/icon.png</icon>
         <fanart>resources/fanart.png</fanart>
