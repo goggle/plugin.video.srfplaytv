@@ -82,6 +82,8 @@ TODAY = LANGUAGE(30058)
 YESTERDAY = LANGUAGE(30059)
 WEEKDAYS = (LANGUAGE(30060), LANGUAGE(30061), LANGUAGE(30062), LANGUAGE(30063),
             LANGUAGE(30064), LANGUAGE(30065), LANGUAGE(30066))
+DATA_URI = 'special://home/addons/%s/resources/data' % ADDON_ID
+YOUTUBE_CHANNELS_FILENAME = 'youtube_channels.json'
 
 socket.setdefaulttimeout(TIMEOUT)
 
@@ -601,6 +603,13 @@ class SRFPlayTV(object):
                 'mode': 18,
                 'isFolder': True,
                 'displayItem': get_boolean_setting('SRF_Live')
+            }, {
+                # SRF on YouTube
+                'identifier': 'SRF_YouTube',
+                'name': LANGUAGE(30074),
+                'mode': 30,
+                'isFolder': True,
+                'displayItem': get_boolean_setting('SRF_YouTube')
             }
         ]
         for menu_item in main_menu_list:
@@ -1379,6 +1388,19 @@ class SRFPlayTV(object):
         play_item = xbmcgui.ListItem(video_id, path=auth_url)
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, play_item)
 
+    def build_youtube_menu(self):
+        data_file = os.path.join(xbmc.translatePath(DATA_URI),
+                                 YOUTUBE_CHANNELS_FILENAME)
+        with open(data_file, 'r') as f:
+            ch_content = json.load(f)
+            for elem in ch_content.get('channels', []):
+                name = elem.get('name')
+                channel_id = elem.get('channel')
+                list_item = xbmcgui.ListItem(label=name)
+                url = 'plugin://plugin.video.youtube/channel/%s/' % channel_id
+                xbmcplugin.addDirectoryItem(
+                    int(sys.argv[1]), url, list_item, isFolder=True)
+
 
 def run():
     """
@@ -1446,6 +1468,8 @@ def run():
         SRFPlayTV().pick_date()
     elif mode == 26:
         SRFPlayTV().build_tv_menu()
+    elif mode == 30:
+        SRFPlayTV().build_youtube_menu()
     elif mode == 50:
         SRFPlayTV().play_video(name)
     elif mode == 51:
