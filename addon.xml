@@ -8,10 +8,13 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
+    <summary lang="fr_FR">SRF Play vidéothèque</summary>
     <summary lang="en_GB">SRF Play television video library</summary>
     <summary lang="de_DE">SRF Play Videobibliothek</summary>
+    <description lang="fr_FR">Avec SRF Play TV vous pouvez regarder les vidéos de la vidéothèque de la Radio télévision suisse (SRF).</description>
     <description lang="en_GB">SRF Play TV allows you to watch the content from the video library of Swiss Radio and Television (SRF).</description>
     <description lang="de_DE">Mit SRF Play TV können Sie den Inhalt der SRF Play Videobibliothek des Schweizer Fernsehens anschauen.</description>
+    <disclaimer lang="fr_FR">Certains contenus sont géo-bloqués et disponibles uniquement en Suisse.</disclaimer>
     <disclaimer lang="en_GB">Some content is geo-blocked and only available in Switzerland.</disclaimer>
     <disclaimer lang="de_DE">Einige Inhalte sind nur in der Schweiz verfügbar.</disclaimer>
     <language>de</language>
@@ -22,6 +25,7 @@
     <email>seileralex@gmail.com</email>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
     <news>vX.Y.Z (yyyy-mm-dd)
+ - Add French translation.
  - Add Italian translation.
  - Add YouTube support.
 v1.1.0 (2018-07-01)

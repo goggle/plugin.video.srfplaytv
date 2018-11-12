@@ -50,3 +50,4 @@ If you like this plugin, consider to make a donation to the author:
 
 ## Thanks
  - Thanks to @giovannipessiva for providing an Italian translation.
+ - Thanks @nmielec for providing a French translation.
