@@ -3,7 +3,7 @@
   <requires>
     <import addon="xbmc.python" version="2.25.0"/>
     <import addon="script.module.simplecache" version="1.0.0"/>
-    <import addon="plugin.video.youtube" version="6.2.2" optional="true"/>
+    <import addon="plugin.video.youtube" version="6.2.2"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
     <provides>video</provides>
@@ -25,7 +25,8 @@
     <website>https://www.srf.ch/play/tv</website>
     <email>seileralex@gmail.com</email>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
-    <news>vX.Y.Z (yyyy-mm-dd) TODO
+    <news>v1.Y.Z (yyyy-mm-dd) TODO
+ - Improve SRF on YouTube.
 
 v1.2.0 (2018-11-12)
  - Add French translation.
