@@ -1390,7 +1390,8 @@ class SRFPlayTV(object):
         play_item = xbmcgui.ListItem(video_id, path=auth_url)
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, play_item)
 
-    def build_youtube_menu(self):
+    @staticmethod
+    def build_youtube_menu():
         """
         Builds the main YouTube menu (listing all the SRF YouTube channels).
         """
