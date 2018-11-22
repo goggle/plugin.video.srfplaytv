@@ -31,6 +31,7 @@ import xbmcaddon
 
 # import youtube_requests
 import srgssr
+import youtube_channels
 
 ADDON_ID = 'plugin.video.srfplaytv'
 REAL_SETTINGS = xbmcaddon.Addon(id=ADDON_ID)
@@ -40,7 +41,7 @@ DEBUG = (REAL_SETTINGS.getSetting('Enable_Debugging') == 'true')
 CONTENT_TYPE = 'videos'
 
 # DATA_URI = 'special://home/addons/%s/resources/data' % ADDON_ID
-# YOUTUBE_CHANNELS_FILENAME = 'youtube_channels.json'
+YOUTUBE_CHANNELS_FILENAME = 'youtube_channels.json'
 
 
 class SRFPlayTV(srgssr.SRGSSR):
@@ -62,8 +63,10 @@ def log(msg, level=xbmc.LOGDEBUG):
             msg += ' ,' + traceback.format_exc()
     xbmc.log(ADDON_ID + '-' + ADDON_VERSION + '-' + msg, level)
 
+
 def get_params():
     return dict(urlparse.parse_qsl(sys.argv[2][1:]))
+
 
 def run():
     """
@@ -146,8 +149,11 @@ def run():
         SRFPlayTV().pick_date()
     elif mode == 26:
         SRFPlayTV().build_tv_menu()
-    # elif mode == 30:
-    #     SRFPlayTV().build_youtube_menu()
+    elif mode == 30:
+        channel_ids = SRFPlayTV().read_youtube_channels(
+            YOUTUBE_CHANNELS_FILENAME)
+        youtube_channels.YoutubeChannels(
+            int(sys.argv[1]), channel_ids).build_youtube_menu()
     elif mode == 50:
         SRFPlayTV().play_video(name)
     elif mode == 51:
