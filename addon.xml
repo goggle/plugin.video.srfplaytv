@@ -2,7 +2,6 @@
 <addon id="plugin.video.srfplaytv" name="SRF Play TV" version="1.2.1" provider-name="Alexander Seiler">
   <requires>
     <import addon="xbmc.python" version="2.25.0"/>
-    <!-- <import addon="plugin.video.youtube" version="6.2.2"/> -->
     <import addon="script.module.srgssr" version="0.0.1"/>
     <import addon="script.module.youtube_channels" version="0.0.1"/>
   </requires>
@@ -29,6 +28,7 @@
     <news>v1.2.1 (2018-12-01)
  - Improve SRF on YouTube.
  - Fix date parsing issue.
+ - Improve extraction of video descriptions.
 
 v1.2.0 (2018-11-12)
  - Add French translation.
