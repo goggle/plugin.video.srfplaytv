@@ -151,16 +151,24 @@ def run():
         SRFPlayTV().build_tv_menu()
     elif mode == 30:
         SRFPlayTV().build_youtube_main_menu()
-    elif mode in (31, 32):
+    elif mode in (31, 32, 33):
         channel_ids = SRFPlayTV().read_youtube_channels(
             YOUTUBE_CHANNELS_FILENAME)
         if mode == 31:
+            plugin_url = SRFPlayTV().build_url(mode=33, name='%s')
             youtube_channels.YoutubeChannels(
-                # TODO: naming (build_youtube_menu)
-                int(sys.argv[1]), channel_ids).build_youtube_menu()
+                int(sys.argv[1]), channel_ids).build_channel_overview_menu(plugin_channel_url=plugin_url)
         elif mode == 32:
             youtube_channels.YoutubeChannels(
                 int(sys.argv[1]), channel_ids).build_newest_videos()
+        elif mode == 33:
+            try:
+                page = int(page)
+            except TypeError:
+                page = 1
+            next_page_url = SRFPlayTV().build_url(mode=33, name=name, page=page+1)
+            youtube_channels.YoutubeChannels(
+                int(sys.argv[1]), channel_ids).build_channel_menu(name, page=page, next_page_url=next_page_url)
     elif mode == 50:
         SRFPlayTV().play_video(name)
     elif mode == 51:
