@@ -110,7 +110,7 @@ def run():
             'Most_Clicked_Shows',
             'Soon_Offline',
             'Shows_By_Date',
-            'Live_TV',
+            # 'Live_TV',
             'SRF_Live',
             'SRF_YouTube'
         ]
@@ -147,8 +147,8 @@ def run():
         SRFPlayTV().build_date_menu(name)
     elif mode == 25:
         SRFPlayTV().pick_date()
-    elif mode == 26:
-        SRFPlayTV().build_tv_menu()
+    # elif mode == 26:
+    #     SRFPlayTV().build_tv_menu()
     elif mode == 30:
         SRFPlayTV().build_youtube_main_menu()
     elif mode in (31, 32, 33):
