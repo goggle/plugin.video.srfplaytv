@@ -29,7 +29,6 @@ import xbmc
 import xbmcplugin
 import xbmcaddon
 
-# import youtube_requests
 import srgssr
 import youtube_channels
 
@@ -159,16 +158,11 @@ def run():
             youtube_channels.YoutubeChannels(
                 int(sys.argv[1]), channel_ids).build_channel_overview_menu(plugin_channel_url=plugin_url)
         elif mode == 32:
-            youtube_channels.YoutubeChannels(
-                int(sys.argv[1]), channel_ids).build_newest_videos()
+            SRFPlayTV().build_youtube_newest_videos_menu(
+                channel_ids, mode, page=page)
         elif mode == 33:
-            try:
-                page = int(page)
-            except TypeError:
-                page = 1
-            next_page_url = SRFPlayTV().build_url(mode=33, name=name, page=page+1)
-            youtube_channels.YoutubeChannels(
-                int(sys.argv[1]), channel_ids).build_channel_menu(name, page=page, next_page_url=next_page_url)
+            SRFPlayTV().build_youtube_channel_menu(
+                channel_ids, name, mode, page=page, page_token=page_hash)
     elif mode == 50:
         SRFPlayTV().play_video(name)
     elif mode == 51:
