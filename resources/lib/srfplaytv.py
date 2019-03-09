@@ -154,11 +154,7 @@ def run():
         channel_ids = SRFPlayTV().read_youtube_channels(
             YOUTUBE_CHANNELS_FILENAME)
         if mode == 31:
-            plugin_url = SRFPlayTV().build_url(mode=33, name='%s')
-            youtube_channels.YoutubeChannels(
-                int(sys.argv[1]), channel_ids, ADDON_ID,
-                DEBUG).build_channel_overview_menu(
-                    plugin_channel_url=plugin_url)
+            SRFPlayTV().build_youtube_channel_overview_menu(channel_ids, 33)
         elif mode == 32:
             SRFPlayTV().build_youtube_newest_videos_menu(
                 channel_ids, mode, page=page)
