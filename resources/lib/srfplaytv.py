@@ -30,7 +30,6 @@ import xbmcplugin
 import xbmcaddon
 
 import srgssr
-import youtube_channels
 
 ADDON_ID = 'plugin.video.srfplaytv'
 REAL_SETTINGS = xbmcaddon.Addon(id=ADDON_ID)
@@ -40,7 +39,7 @@ DEBUG = (REAL_SETTINGS.getSetting('Enable_Debugging') == 'true')
 CONTENT_TYPE = 'videos'
 
 # DATA_URI = 'special://home/addons/%s/resources/data' % ADDON_ID
-YOUTUBE_CHANNELS_FILENAME = 'youtube_channels.json'
+# YOUTUBE_CHANNELS_FILENAME = 'youtube_channels.json'
 
 
 class SRFPlayTV(srgssr.SRGSSR):
@@ -150,17 +149,13 @@ def run():
     #     SRFPlayTV().build_tv_menu()
     elif mode == 30:
         SRFPlayTV().build_youtube_main_menu()
-    elif mode in (31, 32, 33):
-        channel_ids = SRFPlayTV().read_youtube_channels(
-            YOUTUBE_CHANNELS_FILENAME)
-        if mode == 31:
-            SRFPlayTV().build_youtube_channel_overview_menu(channel_ids, 33)
-        elif mode == 32:
-            SRFPlayTV().build_youtube_newest_videos_menu(
-                channel_ids, mode, page=page)
-        elif mode == 33:
-            SRFPlayTV().build_youtube_channel_menu(
-                channel_ids, name, mode, page=page, page_token=page_hash)
+    elif mode == 31:
+        SRFPlayTV().build_youtube_channel_overview_menu(33)
+    elif mode == 32:
+        SRFPlayTV().build_youtube_newest_videos_menu(mode, page=page)
+    elif mode == 33:
+        SRFPlayTV().build_youtube_channel_menu(
+            name, mode, page=page, page_token=page_hash)
     elif mode == 50:
         SRFPlayTV().play_video(name)
     elif mode == 51:
