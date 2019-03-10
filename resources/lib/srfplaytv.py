@@ -29,11 +29,7 @@ except ImportError:  # Python 2
     from urlparse import parse_qsl
     from urllib import unquote_plus
 
-# import xbmc
-# import xbmcplugin
-# import xbmcaddon
 from kodi_six import xbmc, xbmcaddon, xbmcplugin
-
 import srgssr
 
 ADDON_ID = 'plugin.video.srfplaytv'
@@ -42,9 +38,6 @@ ADDON_NAME = REAL_SETTINGS.getAddonInfo('name')
 ADDON_VERSION = REAL_SETTINGS.getAddonInfo('version')
 DEBUG = (REAL_SETTINGS.getSetting('Enable_Debugging') == 'true')
 CONTENT_TYPE = 'videos'
-
-# DATA_URI = 'special://home/addons/%s/resources/data' % ADDON_ID
-# YOUTUBE_CHANNELS_FILENAME = 'youtube_channels.json'
 
 
 class SRFPlayTV(srgssr.SRGSSR):
