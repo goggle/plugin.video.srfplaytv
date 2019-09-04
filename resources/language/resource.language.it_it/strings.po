@@ -98,3 +98,7 @@ msgstr "Diretta TV"
 msgctxt "#30074"
 msgid "SRF on YouTube"
 msgstr "SRF su YouTube"
+
+msgctxt "#30075"
+msgid "Search"
+msgstr "Ricerca"

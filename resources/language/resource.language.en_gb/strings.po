@@ -98,3 +98,7 @@ msgstr ""
 msgctxt "#30074"
 msgid "SRF on YouTube"
 msgstr ""
+
+msgctxt "#30075"
+msgid "Search"
+msgstr ""
