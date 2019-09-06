@@ -149,7 +149,8 @@ def run():
     elif mode == 27:
         SRFPlayTV().build_search_menu()
     elif mode == 28:
-        SRFPlayTV().build_search_media_menu(mode=mode, name=name, page=page, page_hash=page_hash)
+        SRFPlayTV().build_search_media_menu(
+            mode=mode, name=name, page=page, page_hash=page_hash)
     elif mode == 29:
         SRFPlayTV().build_search_show_menu(name=name)
     elif mode == 70:
