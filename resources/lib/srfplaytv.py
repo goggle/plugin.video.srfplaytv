@@ -158,11 +158,7 @@ def run():
     elif mode == 71:
         SRFPlayTV().build_recent_search_menu('show')
     elif mode == 30:
-        SRFPlayTV().build_youtube_main_menu()
-    elif mode == 31:
         SRFPlayTV().build_youtube_channel_overview_menu(33)
-    elif mode == 32:
-        SRFPlayTV().build_youtube_newest_videos_menu(mode, page=page)
     elif mode == 33:
         SRFPlayTV().build_youtube_channel_menu(
             name, mode, page=page, page_token=page_hash)
