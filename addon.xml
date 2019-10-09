@@ -25,8 +25,9 @@
     <website>https://www.srf.ch/play/tv</website>
     <email>seileralex@gmail.com</email>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
-    <news>v1.6.0 (2019-mm-dd)
+    <news>v1.6.0 (2019-10-09)
  - Add search feature.
+ - Remove 'Newest YouTube videos' menu.
 
 v1.5.0 (2019-03-10)
  - Port all code that is reusable by other SRG SSR plugin's into seperate library script.module.srgssr.
