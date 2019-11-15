@@ -1,4 +1,4 @@
-name: Python application
+name: Kodi addon checker
 
 on: [push, pull_request]
 
@@ -23,11 +23,15 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-line-length=127 --statistics
-    - name: Test with kodi-addon-checker
+    - name: Install kodi-addon-checker
       run: |
         pip install kodi-addon-checker
+    - name: Test with kodi-addon-checker on branch krypton
+      run: |
         kodi-addon-checker --branch krypton .
+    - name: Test with kodi-addon-checker on branch leia
+      run: |
         kodi-addon-checker --branch leia .
+    - name: Test with kodi-addon-checker on branch matrix
+      run: |
         kodi-addon-checker --branch matrix .
-        
-        
