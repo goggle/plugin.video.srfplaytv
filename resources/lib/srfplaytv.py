@@ -22,14 +22,12 @@
 import sys
 import traceback
 
-try:  # Python 3
-    from urllib.parse import unquote_plus
-    from urllib.parse import parse_qsl
-except ImportError:  # Python 2
-    from urlparse import parse_qsl
-    from urllib import unquote_plus
+from urllib.parse import unquote_plus
+from urllib.parse import parse_qsl
 
-from kodi_six import xbmc, xbmcaddon, xbmcplugin
+import xbmc
+import xbmcaddon
+import xbmcplugin
 import srgssr
 
 ADDON_ID = 'plugin.video.srfplaytv'
