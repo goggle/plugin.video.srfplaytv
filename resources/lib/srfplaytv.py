@@ -99,14 +99,16 @@ def run():
             'All_Shows',
             'Favourite_Shows',
             'Newest_Favourite_Shows',
-            'Recommendations',
-            'Newest_Shows',
-            'Most_Clicked_Shows',
-            'Soon_Offline',
+            'Topics',
+            'Most_Searched_TV_Shows',
+            # 'Recommendations',
+            # 'Newest_Shows',
+            # 'Most_Clicked_Shows',
+            # 'Soon_Offline',
             'Shows_By_Date',
             # 'Live_TV',
             'Search',
-            'SRF_Live',
+            # 'SRF_Live',
             'SRF_YouTube'
         ]
         SRFPlayTV().build_main_menu(identifiers)
@@ -117,13 +119,17 @@ def run():
     elif mode == 12:
         SRFPlayTV().build_newest_favourite_menu(page=page)
     elif mode == 13:
-        SRFPlayTV().build_topics_overview_menu('Newest')
+        SRFPlayTV().build_topics_menu()
     elif mode == 14:
-        SRFPlayTV().build_topics_overview_menu('Most clicked')
-    elif mode == 15:
-        SRFPlayTV().build_topics_menu('Soon offline', page=page)
-    elif mode == 16:
-        SRFPlayTV().build_topics_menu('Trending', page=page)
+        SRFPlayTV().build_most_searched_shows_menu()
+    # elif mode == 13:
+    #     SRFPlayTV().build_topics_overview_menu('Newest')
+    # elif mode == 14:
+    #     SRFPlayTV().build_topics_overview_menu('Most clicked')
+    # elif mode == 15:
+    #     SRFPlayTV().build_topics_menu('Soon offline', page=page)
+    # elif mode == 16:
+    #     SRFPlayTV().build_topics_menu('Trending', page=page)
     elif mode == 17:
         SRFPlayTV().build_dates_overview_menu()
     elif mode == 18:
@@ -134,10 +140,10 @@ def run():
         SRFPlayTV().build_show_menu(name, page_hash=page_hash)
     elif mode == 21:
         SRFPlayTV().build_episode_menu(name)
-    elif mode == 22:
-        SRFPlayTV().build_topics_menu('Newest', name, page=page)
-    elif mode == 23:
-        SRFPlayTV().build_topics_menu('Most clicked', name, page=page)
+    # elif mode == 22:
+    #     SRFPlayTV().build_topics_menu('Newest', name, page=page)
+    # elif mode == 23:
+    #     SRFPlayTV().build_topics_menu('Most clicked', name, page=page)
     elif mode == 24:
         SRFPlayTV().build_date_menu(name)
     elif mode == 25:
@@ -164,6 +170,10 @@ def run():
         SRFPlayTV().play_video(name)
     elif mode == 51:
         SRFPlayTV().play_livestream(name)
+    elif mode == 100:
+        SRFPlayTV().build_menu_by_urn(name)
+    elif mode == 1000:
+        SRFPlayTV().build_menu_apiv3(name, mode, page, page_hash)
 
     xbmcplugin.setContent(int(sys.argv[1]), CONTENT_TYPE)
     xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_UNSORTED)
