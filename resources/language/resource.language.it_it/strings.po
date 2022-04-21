@@ -83,6 +83,14 @@ msgctxt "#30057"
 msgid "Shows by date"
 msgstr "Show per data"
 
+msgctxt "#30058"
+msgid "Topics"
+msgstr "temi"
+
+msgctxt "#30059"
+msgid "Most searched TV shows"
+msgstr "Programmi TV più cercati"
+
 msgctxt "#30069"
 msgid "Choose your favourite shows"
 msgstr "Scegli i tui show preferiti"
