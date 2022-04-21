@@ -99,12 +99,8 @@ def run():
             'All_Shows',
             'Favourite_Shows',
             'Newest_Favourite_Shows',
-            'Topics',
+            # 'Topics',
             'Most_Searched_TV_Shows',
-            # 'Recommendations',
-            # 'Newest_Shows',
-            # 'Most_Clicked_Shows',
-            # 'Soon_Offline',
             'Shows_By_Date',
             # 'Live_TV',
             'Search',
@@ -122,28 +118,16 @@ def run():
         SRFPlayTV().build_topics_menu()
     elif mode == 14:
         SRFPlayTV().build_most_searched_shows_menu()
-    # elif mode == 13:
-    #     SRFPlayTV().build_topics_overview_menu('Newest')
-    # elif mode == 14:
-    #     SRFPlayTV().build_topics_overview_menu('Most clicked')
-    # elif mode == 15:
-    #     SRFPlayTV().build_topics_menu('Soon offline', page=page)
-    # elif mode == 16:
-    #     SRFPlayTV().build_topics_menu('Trending', page=page)
     elif mode == 17:
         SRFPlayTV().build_dates_overview_menu()
-    elif mode == 18:
-        SRFPlayTV().build_live_menu(extract_srf3=True)
+    # elif mode == 18:
+    #     SRFPlayTV().build_live_menu(extract_srf3=True)
     elif mode == 19:
         SRFPlayTV().manage_favourite_shows()
     elif mode == 20:
         SRFPlayTV().build_show_menu(name, page_hash=page_hash)
     elif mode == 21:
         SRFPlayTV().build_episode_menu(name)
-    # elif mode == 22:
-    #     SRFPlayTV().build_topics_menu('Newest', name, page=page)
-    # elif mode == 23:
-    #     SRFPlayTV().build_topics_menu('Most clicked', name, page=page)
     elif mode == 24:
         SRFPlayTV().build_date_menu(name)
     elif mode == 25:
@@ -155,12 +139,8 @@ def run():
     elif mode == 28:
         SRFPlayTV().build_search_media_menu(
             mode=mode, name=name, page=page, page_hash=page_hash)
-    # elif mode == 29:
-    #     SRFPlayTV().build_search_show_menu(name=name)
     elif mode == 70:
         SRFPlayTV().build_recent_search_menu()
-    # elif mode == 71:
-    #     SRFPlayTV().build_recent_search_menu('show')
     elif mode == 30:
         SRFPlayTV().build_youtube_channel_overview_menu(33)
     elif mode == 33:
