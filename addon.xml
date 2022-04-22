@@ -26,21 +26,10 @@
     <forum>https://forum.kodi.tv/showthread.php?tid=331129</forum>
     <website>https://www.srf.ch/play/tv</website>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
-    <news>v2.0.0 (TBD)
+    <news>v2.0.0 (2022-04-22)
   - Finalize Python 3 support.
   - Adapt to SRGSSR APIv3.
-  - Remove support for audio because it is not included in the SRGSSR API anymore.
-
-v1.6.0 (2019-10-09)
- - Add search feature.
- - Remove 'Newest YouTube videos' menu.
-
-v1.5.0 (2019-03-10)
- - Port all code that is reusable by other SRG SSR plugin's into seperate library script.module.srgssr.
- - Improve YouTube channels support.
- - Remove support of Live TV (DRM protected).
- - Fix extraction of Live events.
- - Add full Python 3 support.</news>
+  - Remove support for audio because it is not included in the SRGSSR API anymore.</news>
     <assets>
         <icon>resources/icon.png</icon>
         <fanart>resources/fanart.png</fanart>
