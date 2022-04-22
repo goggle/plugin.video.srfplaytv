@@ -1,24 +1,21 @@
 # SRF Play TV
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1aae1595af1f4f75bd805bc03cc17215)](https://www.codacy.com/app/goggle/plugin.video.srfplaytv?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=goggle/plugin.video.srfplaytv&amp;utm_campaign=Badge_Grade)
-
 <img src="https://github.com/goggle/plugin.video.srfplaytv/raw/master/resources/icon.png" width="256">
 
 **SRF Play TV** (plugin.video.srfplaytv) is a Kodi plugin to access the video library of the Swiss Radio and Television (SRF).
 This repository is kept as minimal as possible. All the relevant code resides in [script.module.srgssr](https://github.com/goggle/script.module.srgssr).
 
 ## Goals of the plugin
-Bring the full power of the [SRF Play TV media library](https://www.srf.ch/play/tv) on your TV (or another device) via [Kodi](https://kodi.tv/). The plugin aims to be close to the original media library, so that the experience of consuming media through the browser or through Kodi should be similar.
+Get the [SRF Play TV media library](https://www.srf.ch/play/tv) on your TV (or another device) via [Kodi](https://kodi.tv/). The plugin aims to be close to the original media library, so that the experience of consuming media through the browser or through Kodi should be similar.
 
 ## Features
- - [x] Overview over all the shows.
- - [x] Manage a list of your favourite SRF shows and get a list of your recently aired favourite shows.
- - [x] List and play segments for shows (if available), so you don't have to watch the whole episode if you are only interested in a specific section.
- - [x] Various lists: Newest and most clicked shows by topic (e.g. News, Documentaries, etc.), trending shows, soon offline shows, shows by date.
- - [x] Search videos and shows.
- - [x] Choose between SD and HD quality.
- - [x] Subtitle support.
- - [x] Livestreams that are exclusively broadcasted on SRF.ch (only available in Switzerland).
+ - [x] Overview over all the shows
+ - [x] Manage a list of your favourite SRF shows and get a list of your recently aired favourite shows
+ - [ ] List and play segments for shows (if available), so you don't have to watch the whole episode if you are only interested in a specific section
+ - [x] Search videos
+ - [x] Choose between SD and HD quality
+ - [x] Subtitle support
+ - [ ] Livestreams that are exclusively broadcasted on SRF.ch (only available in Switzerland).
  - [ ] Live TV support: SRF 1, SRF 2 and SRF info (only available in Switzerland).
  - [x] SRF on YouTube: Browse the official SRF channels on YouTube.
 
