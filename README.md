@@ -12,6 +12,7 @@ Get the [SRF Play TV media library](https://www.srf.ch/play/tv) on your TV (or a
  - [x] Overview over all the shows
  - [x] Manage a list of your favourite SRF shows and get a list of your recently aired favourite shows
  - [ ] List and play segments for shows (if available), so you don't have to watch the whole episode if you are only interested in a specific section
+ - [x] Shows by date
  - [x] Search videos
  - [x] Choose between SD and HD quality
  - [x] Subtitle support
