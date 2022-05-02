@@ -105,6 +105,7 @@ def run():
             # 'Live_TV',
             'Search',
             # 'SRF_Live',
+            'Homepage',
             'SRF_YouTube'
         ]
         SRFPlayTV().build_main_menu(identifiers)
@@ -152,6 +153,8 @@ def run():
         SRFPlayTV().play_livestream(name)
     elif mode == 100:
         SRFPlayTV().build_menu_by_urn(name)
+    elif mode == 200:
+        SRFPlayTV().build_homepage_menu()
     elif mode == 1000:
         SRFPlayTV().build_menu_apiv3(name, mode, page, page_hash)
 
