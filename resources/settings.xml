@@ -42,6 +42,11 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="Topics" type="boolean" label="30058" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="Shows_By_Date" type="boolean" label="30057" help="">
 					<level>0</level>
 					<default>true</default>

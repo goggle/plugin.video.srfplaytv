@@ -99,13 +99,13 @@ def run():
             'All_Shows',
             'Favourite_Shows',
             'Newest_Favourite_Shows',
-            # 'Topics',
+            'Homepage',
+            'Topics',
             'Most_Searched_TV_Shows',
             'Shows_By_Date',
             # 'Live_TV',
             'Search',
             # 'SRF_Live',
-            'Homepage',
             'SRF_YouTube'
         ]
         SRFPlayTV().build_main_menu(identifiers)
