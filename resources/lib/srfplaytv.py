@@ -124,8 +124,6 @@ def run():
     #     SRFPlayTV().build_live_menu(extract_srf3=True)
     elif mode == 19:
         SRFPlayTV().manage_favourite_shows()
-    elif mode == 20:
-        SRFPlayTV().build_show_menu(name, page_hash=page_hash)
     elif mode == 21:
         SRFPlayTV().build_episode_menu(name)
     elif mode == 24:
@@ -148,8 +146,8 @@ def run():
             name, mode, page=page, page_token=page_hash)
     elif mode == 50:
         SRFPlayTV().play_video(name)
-    elif mode == 51:
-        SRFPlayTV().play_livestream(name)
+    # elif mode == 51:
+    #     SRFPlayTV().play_livestream(name)
     elif mode == 100:
         SRFPlayTV().build_menu_by_urn(name)
     elif mode == 1000:
