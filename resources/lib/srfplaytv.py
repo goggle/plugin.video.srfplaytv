@@ -99,7 +99,8 @@ def run():
             'All_Shows',
             'Favourite_Shows',
             'Newest_Favourite_Shows',
-            # 'Topics',
+            'Homepage',
+            'Topics',
             'Most_Searched_TV_Shows',
             'Shows_By_Date',
             # 'Live_TV',
@@ -150,6 +151,10 @@ def run():
     #     SRFPlayTV().play_livestream(name)
     elif mode == 100:
         SRFPlayTV().build_menu_by_urn(name)
+    elif mode == 200:
+        SRFPlayTV().build_homepage_menu()
+    elif mode == 500:
+        SRFPlayTV().playback_not_supported_dialog(name)
     elif mode == 1000:
         SRFPlayTV().build_menu_apiv3(name, mode, page, page_hash)
 
