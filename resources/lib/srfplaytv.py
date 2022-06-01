@@ -103,9 +103,7 @@ def run():
             'Topics',
             'Most_Searched_TV_Shows',
             'Shows_By_Date',
-            # 'Live_TV',
             'Search',
-            # 'SRF_Live',
             'SRF_YouTube'
         ]
         SRFPlayTV().build_main_menu(identifiers)
@@ -121,8 +119,6 @@ def run():
         SRFPlayTV().build_most_searched_shows_menu()
     elif mode == 17:
         SRFPlayTV().build_dates_overview_menu()
-    # elif mode == 18:
-    #     SRFPlayTV().build_live_menu(extract_srf3=True)
     elif mode == 19:
         SRFPlayTV().manage_favourite_shows()
     elif mode == 21:
@@ -131,8 +127,6 @@ def run():
         SRFPlayTV().build_date_menu(name)
     elif mode == 25:
         SRFPlayTV().pick_date()
-    # elif mode == 26:
-    #     SRFPlayTV().build_tv_menu()
     elif mode == 27:
         SRFPlayTV().build_search_menu()
     elif mode == 28:
@@ -147,8 +141,6 @@ def run():
             name, mode, page=page, page_token=page_hash)
     elif mode == 50:
         SRFPlayTV().play_video(name)
-    # elif mode == 51:
-    #     SRFPlayTV().play_livestream(name)
     elif mode == 100:
         SRFPlayTV().build_menu_by_urn(name)
     elif mode == 200:
