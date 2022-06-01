@@ -26,7 +26,7 @@
     <forum>https://forum.kodi.tv/showthread.php?tid=331129</forum>
     <website>https://www.srf.ch/play/tv</website>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
-    <news>v2.1.0 (TBD)
+    <news>v2.1.0 (2022-06-01)
   - Add support for content presented on homepage.
   - Add support for topics.
   - Add support for playback of livestreams.
