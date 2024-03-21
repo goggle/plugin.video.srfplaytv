@@ -2,7 +2,7 @@
 <addon id="plugin.video.srfplaytv" name="SRF Play TV" version="2.2.4" provider-name="Alexander Seiler">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
-    <import addon="script.module.srgssr" version="2.2.3"/>
+    <import addon="script.module.srgssr" version="2.2.4"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
     <provides>video</provides>
