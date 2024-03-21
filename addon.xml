@@ -26,7 +26,10 @@
     <forum>https://forum.kodi.tv/showthread.php?tid=331129</forum>
     <website>https://www.srf.ch/play/tv</website>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
-    <news>v2.2.3 (2023-03-09)
+    <news>v2.2.4 (2024-03-21)
+  - Fix translatePath error
+
+v2.2.3 (2023-03-09)
   - Display date and time for scheduled live streams.
 
 v2.2.2 (2023-01-29)
