@@ -1,0 +1,22 @@
+name: Kodi addon checker on omega
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+    - name: Test with kodi-addon-checker on branch omega
+      run: |
+        pip install kodi-addon-checker
+        kodi-addon-checker --branch omega .
