@@ -31,10 +31,6 @@ msgctxt "#30003"
 msgid "Enable segments in topical playlists"
 msgstr ""
 
-msgctxt "#30004"
-msgid "Enable subtitles"
-msgstr ""
-
 msgctxt "#30005"
 msgid "Manage favourite shows"
 msgstr ""

@@ -26,7 +26,10 @@
     <forum>https://forum.kodi.tv/showthread.php?tid=331129</forum>
     <website>https://www.srf.ch/play/tv</website>
     <source>https://github.com/goggle/plugin.video.srfplaytv</source>
-    <news>v2.2.5 (2025-02-09)
+    <news>v2.2.6 (TBD)
+  - Always extract subtitles
+
+v2.2.5 (2025-02-09)
   - Retrieve subtitles via HTTPS
   - Adapt to upstream changes
 

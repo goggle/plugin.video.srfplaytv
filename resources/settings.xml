@@ -8,11 +8,6 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="Extract_Subtitles" type="boolean" label="30004" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="Enable_Debugging" type="boolean" label="30000" help="">
 					<level>0</level>
 					<default>false</default>
