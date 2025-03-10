@@ -27,8 +27,6 @@ import xbmc
 import xbmcaddon
 import xbmcplugin
 
-# from script_module_srgssr.lib.srgssr import SRGSSR
-# from script.module.srgssr.lib.srgssr import SRGSSR
 import srgssr
 
 ADDON_ID = 'plugin.video.srfplaytv'
@@ -40,7 +38,6 @@ CONTENT_TYPE = 'videos'
 
 
 class SRFPlayTV(srgssr.SRGSSR):
-# class SRFPlayTV(SRGSSR):
     def __init__(self):
         super(SRFPlayTV, self).__init__(
             int(sys.argv[1]), bu='srf', addon_id=ADDON_ID)
