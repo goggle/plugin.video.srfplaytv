@@ -83,10 +83,6 @@ msgctxt "#30058"
 msgid "Topics"
 msgstr ""
 
-msgctxt "#30059"
-msgid "Most searched TV shows"
-msgstr ""
-
 msgctxt "#30060"
 msgid "Homepage"
 msgstr ""

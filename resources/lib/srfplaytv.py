@@ -99,7 +99,6 @@ def run():
             "Newest_Favourite_Shows",
             "Homepage",
             "Topics",
-            "Most_Searched_TV_Shows",
             "Shows_By_Date",
             "Search",
             "SRF_YouTube",
@@ -113,8 +112,6 @@ def run():
         SRFPlayTV().menu_builder.build_newest_favourite_menu(page=page)
     elif mode == 13:
         SRFPlayTV().menu_builder.build_topics_menu()
-    elif mode == 14:
-        SRFPlayTV().menu_builder.build_most_searched_shows_menu()
     elif mode == 17:
         SRFPlayTV().menu_builder.build_dates_overview_menu()
     elif mode == 19:
