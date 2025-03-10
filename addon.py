@@ -19,5 +19,5 @@
 
 from resources.lib import srfplaytv
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     srfplaytv.run()
