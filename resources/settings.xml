@@ -47,11 +47,6 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="Most_Searched_TV_Shows" type="boolean" label="30059" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="Search" type="boolean" label="30085" help="">
 					<level>0</level>
 					<default>true</default>
