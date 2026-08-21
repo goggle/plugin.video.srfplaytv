@@ -126,12 +126,12 @@ class SRFPlayTV(srgssr.SRGSSR):
 
             # Add folder items for the two sub-directories
             sport_folder_url = self.build_url(mode=90, name="sports")
-            sport_item = xbmcgui.ListItem(label=self.plugin_language(30101))
+            sport_item = xbmcgui.ListItem(label=self.language(30101) or self.plugin_language(30101) or "Sports Live")
             sport_item.setArt({"icon": self.icon})
             xbmcplugin.addDirectoryItem(self.handle, sport_folder_url, sport_item, isFolder=True)
 
             others_folder_url = self.build_url(mode=90, name="others")
-            others_item = xbmcgui.ListItem(label=self.plugin_language(30102))
+            others_item = xbmcgui.ListItem(label=self.language(30102) or self.plugin_language(30102) or "Other Live Streams")
             others_item.setArt({"icon": self.icon})
             xbmcplugin.addDirectoryItem(self.handle, others_folder_url, others_item, isFolder=True)
 
@@ -310,7 +310,14 @@ def run():
             "Search",
             "SRF_YouTube",
         ]
-        SRFPlayTV().menu_builder.build_main_menu(identifiers)
+        srf = SRFPlayTV()
+        srf.menu_builder.build_main_menu(identifiers)
+
+        # Append Direct TV to the main menu
+        tv_list_item = xbmcgui.ListItem(label=srf.plugin_language(30072))
+        tv_list_item.setArt({"icon": srf.icon})
+        tv_url = srf.build_url(mode=90)
+        xbmcplugin.addDirectoryItem(int(sys.argv[1]), tv_url, tv_list_item, isFolder=True)
     elif mode == 10:
         SRFPlayTV().menu_builder.build_all_shows_menu()
     elif mode == 11:
