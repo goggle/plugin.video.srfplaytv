@@ -43,26 +43,32 @@ CONTENT_TYPE = "videos"
 
 class SRFPlayTV(srgssr.SRGSSR):
     def __init__(self):
-        super(SRFPlayTV, self).__init__(int(sys.argv[1]), bu="srf", addon_id=ADDON_ID)
-
-
+        super(SRFPlayTV, self).__init__(
+            int(sys.argv[1]), bu="srf", addon_id=ADDON_ID
+        )
 
     def build_livetv_menu(self, sub_menu=None):
         """Fetches 24/7 channels and scheduled event livestreams.
 
-        If sub_menu is None, renders 24/7 channels and folder links for sub-menus.
-        If sub_menu is "sports" or "others", renders only that category of events.
+        If sub_menu is None, renders 24/7 channels and folder links for
+        sub-menus.
+        If sub_menu is "sports" or "others", renders only that category of
+        events.
         """
         headers = {'User-Agent': 'Mozilla/5.0'}
 
         # Case 1: Build the main root "Direct TV" page
         if sub_menu is None:
             # 1. Fetch available 24/7 livestreams
-            livestreams_url = "https://www.srf.ch/play/v3/api/srf/production/tv-livestreams"
+            livestreams_url = (
+                "https://www.srf.ch/play/v3/api/srf/production/tv-livestreams"
+            )
             try:
                 req = urllib.request.Request(livestreams_url, headers=headers)
                 with urllib.request.urlopen(req) as response:
-                    livestreams_data = json.loads(response.read().decode('utf-8'))
+                    livestreams_data = json.loads(
+                        response.read().decode('utf-8')
+                    )
             except Exception as e:
                 log(f"Failed to fetch live TV channels: {e}", xbmc.LOGERROR)
                 return
@@ -72,7 +78,10 @@ class SRFPlayTV(srgssr.SRGSSR):
                 return
 
             # 2. Fetch program guide for EPG data (enriched fallback)
-            guide_url = "https://www.srf.ch/play/v3/api/srf/production/tv-program-guide"
+            guide_url = (
+                "https://www.srf.ch/play/v3/api/srf/production/"
+                "tv-program-guide"
+            )
             guide_by_channel = {}
             try:
                 req = urllib.request.Request(guide_url, headers=headers)
@@ -81,9 +90,15 @@ class SRFPlayTV(srgssr.SRGSSR):
                     for item in guide_data.get("data", []):
                         ch_id = item.get("channel", {}).get("id")
                         if ch_id:
-                            guide_by_channel[ch_id] = item.get("programList", [])
+                            guide_by_channel[ch_id] = item.get(
+                                "programList", []
+                            )
             except Exception as e:
-                log(f"Failed to fetch live TV program guide (falling back to channels-only): {e}", xbmc.LOGWARNING)
+                log(
+                    "Failed to fetch live TV program guide "
+                    f"(falling back to channels-only): {e}",
+                    xbmc.LOGWARNING,
+                )
 
             now_utc = datetime.datetime.now(datetime.timezone.utc)
 
@@ -101,15 +116,24 @@ class SRFPlayTV(srgssr.SRGSSR):
                     program_list = guide_by_channel.get(channel_id, [])
                     for prog in program_list:
                         try:
-                            start = datetime.datetime.fromisoformat(prog["startTime"].replace('Z', '+00:00'))
-                            end = datetime.datetime.fromisoformat(prog["endTime"].replace('Z', '+00:00'))
+                            start = datetime.datetime.fromisoformat(
+                                prog["startTime"].replace('Z', '+00:00')
+                            )
+                            end = datetime.datetime.fromisoformat(
+                                prog["endTime"].replace('Z', '+00:00')
+                            )
                             if start <= now_utc <= end:
                                 current_show = prog["title"]
                                 break
                             elif start > now_utc:
                                 if not next_show:
-                                    formatted_start = start.astimezone().strftime("%H:%M")
-                                    next_show = f"À suivre : {prog['title']} ({formatted_start})"
+                                    formatted_start = (
+                                        start.astimezone().strftime("%H:%M")
+                                    )
+                                    next_show = (
+                                        "À suivre : "
+                                        f"{prog['title']} ({formatted_start})"
+                                    )
                         except Exception:
                             pass
 
@@ -122,26 +146,42 @@ class SRFPlayTV(srgssr.SRGSSR):
                         list_item.setArt({"thumb": img_url})
 
                     plugin_url = self.build_url(mode=50, name=urn)
-                    xbmcplugin.addDirectoryItem(self.handle, plugin_url, list_item, isFolder=False)
+                    xbmcplugin.addDirectoryItem(
+                        self.handle, plugin_url, list_item, isFolder=False
+                    )
 
             # Add folder items for the two sub-directories
             sport_folder_url = self.build_url(mode=90, name="sports")
-            sport_item = xbmcgui.ListItem(label=self.language(30101) or self.plugin_language(30101) or "Sports Live")
+            sport_item = xbmcgui.ListItem(
+                label=self.language(30101)
+                or self.plugin_language(30101)
+                or "Sports Live"
+            )
             sport_item.setArt({"icon": self.icon})
-            xbmcplugin.addDirectoryItem(self.handle, sport_folder_url, sport_item, isFolder=True)
+            xbmcplugin.addDirectoryItem(
+                self.handle, sport_folder_url, sport_item, isFolder=True
+            )
 
             others_folder_url = self.build_url(mode=90, name="others")
-            others_item = xbmcgui.ListItem(label=self.language(30102) or self.plugin_language(30102) or "Other Live Streams")
+            others_item = xbmcgui.ListItem(
+                label=self.language(30102)
+                or self.plugin_language(30102)
+                or "Other Live Streams"
+            )
             others_item.setArt({"icon": self.icon})
-            xbmcplugin.addDirectoryItem(self.handle, others_folder_url, others_item, isFolder=True)
+            xbmcplugin.addDirectoryItem(
+                self.handle, others_folder_url, others_item, isFolder=True
+            )
 
-        # Case 2: Build a specific subdirectory ("sports" or "others") and its date folders/events
+        # Case 2: Build a specific subdirectory ("sports" or "others") and
+        # its date folders/events
         else:
             sub_category, sep, date_filter = sub_menu.partition('_')
 
             # Fetch scheduled event livestreams with caching
             scheduled_url = (
-                "https://il.srgssr.ch/integrationlayer/2.0/srf/mediaList/video/"
+                "https://il.srgssr.ch/integrationlayer/2.0/srf/"
+                "mediaList/video/"
                 "scheduledLivestreams?vector=portalplay&pageSize=100"
             )
             scheduled_events = []
@@ -150,9 +190,16 @@ class SRFPlayTV(srgssr.SRGSSR):
                 response_text = self.open_url(scheduled_url)
                 if response_text:
                     scheduled_data = json.loads(response_text)
-                    scheduled_events = scheduled_data.get("mediaList") or scheduled_data.get("data") or []
+                    scheduled_events = (
+                        scheduled_data.get("mediaList")
+                        or scheduled_data.get("data")
+                        or []
+                    )
             except Exception as e:
-                log(f"Failed to fetch scheduled livestreams: {e}", xbmc.LOGWARNING)
+                log(
+                    f"Failed to fetch scheduled livestreams: {e}",
+                    xbmc.LOGWARNING,
+                )
 
             now_utc = datetime.datetime.now(datetime.timezone.utc)
             local_now = now_utc.astimezone()
@@ -161,25 +208,32 @@ class SRFPlayTV(srgssr.SRGSSR):
             active_and_upcoming = []
             for item in scheduled_events:
                 try:
-                    valid_to = datetime.datetime.fromisoformat(item["validTo"].replace('Z', '+00:00'))
+                    valid_to = datetime.datetime.fromisoformat(
+                        item["validTo"].replace('Z', '+00:00')
+                    )
                     if valid_to >= now_utc:
                         active_and_upcoming.append(item)
                 except Exception:
                     pass
 
-            # Filter by sub-category using the Integration Layer's "creatorUser" metadata attribute
+            # Filter by sub-category using the Integration Layer's
+            # "creatorUser" metadata attribute
             filtered_events = []
             for item in active_and_upcoming:
                 is_sport = item.get("creatorUser") == "MMSport"
 
-                if (sub_category == "sports" and is_sport) or (sub_category == "others" and not is_sport):
+                if (sub_category == "sports" and is_sport) or (
+                    sub_category == "others" and not is_sport
+                ):
                     filtered_events.append(item)
 
             # Group filtered events by local date
             grouped_events = {}
             for item in filtered_events:
                 try:
-                    valid_from = datetime.datetime.fromisoformat(item["validFrom"].replace('Z', '+00:00'))
+                    valid_from = datetime.datetime.fromisoformat(
+                        item["validFrom"].replace('Z', '+00:00')
+                    )
                     local_start = valid_from.astimezone()
                     local_date = local_start.date()
                     if local_date not in grouped_events:
@@ -205,7 +259,10 @@ class SRFPlayTV(srgssr.SRGSSR):
                     return self.language(30058)  # Today
                 elif dato == today - datetime.timedelta(days=1):
                     return self.language(30059)  # Yesterday
-                return "%s, %s" % (weekdays[dato.weekday()], dato.strftime("%d.%m.%Y"))
+                return "%s, %s" % (
+                    weekdays[dato.weekday()],
+                    dato.strftime("%d.%m.%Y"),
+                )
 
             if not date_filter:
                 # Build Date Folders
@@ -216,7 +273,9 @@ class SRFPlayTV(srgssr.SRGSSR):
 
                     target_name = f"{sub_category}_{local_date.isoformat()}"
                     folder_url = self.build_url(mode=90, name=target_name)
-                    xbmcplugin.addDirectoryItem(self.handle, folder_url, folder_item, isFolder=True)
+                    xbmcplugin.addDirectoryItem(
+                        self.handle, folder_url, folder_item, isFolder=True
+                    )
             else:
                 # Render events chronologically for the selected date
                 selected_date = datetime.date.fromisoformat(date_filter)
@@ -230,7 +289,9 @@ class SRFPlayTV(srgssr.SRGSSR):
 
                     if title and urn:
                         try:
-                            valid_to = datetime.datetime.fromisoformat(item["validTo"].replace('Z', '+00:00'))
+                            valid_to = datetime.datetime.fromisoformat(
+                                item["validTo"].replace('Z', '+00:00')
+                            )
                             if start_time <= now_utc <= valid_to:
                                 prefix = "[COLOR red][LIVE] [/COLOR]"
                             else:
@@ -245,8 +306,9 @@ class SRFPlayTV(srgssr.SRGSSR):
                             list_item.setArt({"thumb": img_url})
 
                         plugin_url = self.build_url(mode=50, name=urn)
-                        xbmcplugin.addDirectoryItem(self.handle, plugin_url, list_item, isFolder=False)
-
+                        xbmcplugin.addDirectoryItem(
+                            self.handle, plugin_url, list_item, isFolder=False
+                        )
 
 
 def log(msg, level=xbmc.LOGDEBUG):
@@ -317,7 +379,9 @@ def run():
         tv_list_item = xbmcgui.ListItem(label=srf.plugin_language(30072))
         tv_list_item.setArt({"icon": srf.icon})
         tv_url = srf.build_url(mode=90)
-        xbmcplugin.addDirectoryItem(int(sys.argv[1]), tv_url, tv_list_item, isFolder=True)
+        xbmcplugin.addDirectoryItem(
+            int(sys.argv[1]), tv_url, tv_list_item, isFolder=True
+        )
     elif mode == 10:
         SRFPlayTV().menu_builder.build_all_shows_menu()
     elif mode == 11:
