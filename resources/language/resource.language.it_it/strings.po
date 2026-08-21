@@ -109,8 +109,8 @@ msgstr "Ricerca"
 
 msgctxt "#30101"
 msgid "Sport Live"
-msgstr ""
+msgstr "Sport Live"
 
 msgctxt "#30102"
 msgid "Altri flussi in diretta"
-msgstr ""
+msgstr "Altri flussi in diretta"
