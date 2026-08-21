@@ -106,3 +106,11 @@ msgstr "SRF auf YouTube"
 msgctxt "#30085"
 msgid "Search"
 msgstr "Suche"
+
+msgctxt "#30101"
+msgid "Sport Live"
+msgstr "Sport Live"
+
+msgctxt "#30102"
+msgid "Andere Live-Streams"
+msgstr "Andere Live-Streams"
