@@ -109,8 +109,8 @@ msgstr ""
 
 msgctxt "#30101"
 msgid "Sports Live"
-msgstr ""
+msgstr "Sports Live"
 
 msgctxt "#30102"
 msgid "Other Live Streams"
-msgstr ""
+msgstr "Other Live Streams"
