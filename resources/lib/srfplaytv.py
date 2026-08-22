@@ -292,6 +292,13 @@ class SRFPlayTV(srgssr.SRGSSR):
                     urn = item.get("urn")
                     img_url = item.get("imageUrl")
 
+                    # cesimId, when present, is the real swisstxt asset id
+                    # and takes priority over the event's own uuid (which
+                    # doesn't resolve on its own for these events).
+                    cesim_id = item.get("cesimId")
+                    if cesim_id:
+                        urn = f"urn:swisstxt:video:srf:{cesim_id}"
+
                     if title and urn:
                         try:
                             valid_to = datetime.datetime.fromisoformat(
