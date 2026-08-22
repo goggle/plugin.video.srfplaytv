@@ -187,7 +187,12 @@ class SRFPlayTV(srgssr.SRGSSR):
             scheduled_events = []
             try:
                 # Use SRGSSR's caching open_url to avoid redundant requests
-                response_text = self.open_url(scheduled_url)
+                # Disable cache for root menu to get fresh data,
+                # but use cache when navigating date sub-folders
+                should_cache = ('_' in sub_menu) if sub_menu else False
+                response_text = self.open_url(
+                    scheduled_url, use_cache=should_cache
+                )
                 if response_text:
                     scheduled_data = json.loads(response_text)
                     scheduled_events = (
@@ -305,7 +310,9 @@ class SRFPlayTV(srgssr.SRGSSR):
                         if img_url:
                             list_item.setArt({"thumb": img_url})
 
-                        plugin_url = self.build_url(mode=50, name=urn)
+                        plugin_url = self.build_url(
+                            mode=50, name=urn, title=title
+                        )
                         xbmcplugin.addDirectoryItem(
                             self.handle, plugin_url, list_item, isFolder=False
                         )
@@ -354,6 +361,10 @@ def run():
         page = unquote_plus(params["page"])
     except Exception:
         page = None
+    try:
+        title = unquote_plus(params["title"])
+    except Exception:
+        title = None
 
     log("Mode: " + str(mode))
     log("URL : " + str(url))
@@ -417,7 +428,7 @@ def run():
             name, mode, page=page, page_token=page_hash
         )
     elif mode == 50:
-        SRFPlayTV().player.play_video(name)
+        SRFPlayTV().player.play_video(name, title=title)
     elif mode == 100:
         SRFPlayTV().menu_builder.build_menu_by_urn(name)
     elif mode == 200:
